@@ -1,6 +1,6 @@
 require "vagrant/ui"
 
-module Vagrant
+module VagrantPlugins
   module UML
     class Provider < Vagrant.plugin("2", :provider)
       def initialize(machine)

@@ -1,7 +1,11 @@
-require "vagrant"
+begin
+  require "vagrant"
+rescue LoadError
+  raise "The Vagrant UML plugin must be run within Vagrant."
+end
 
-module Vagrant
-  module Uml
+module VagrantPlugins
+  module UML
     class Plugin < Vagrant.plugin("2")
       name "Usermode Linux (UML) provider"
       description <<-EOF
@@ -13,6 +17,13 @@ module Vagrant
         require_relative "provider"
         Vagrant::UML::Provider
       end
+
+      # This initializes the internationalization strings.
+      def self.setup_i18n
+        I18n.load_path << File.expand_path("locales/en.yml", UML.source_root)
+        I18n.reload!
+      end
+
     end
   end
 end

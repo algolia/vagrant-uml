@@ -1,6 +1,17 @@
-require 'vagrant-uml/version'
-require 'vagrant-uml/plugin'
-require 'vagrant-uml/action'
+require "pathname"
 
-lib_path = Pathname.new(File.expand_path("../vagrant-uml", __FILE__))
-autoload :Action, lib_path.join("action")
+require "vagrant-uml/plugin"
+
+module VagrantPlugins
+  module UML
+    lib_path = Pathname.new(File.expand_path("../vagrant-uml", __FILE__))
+    autoload :Action, lib_path.join("action")
+    #autoload :Errors, lib_path.join("errors")
+    # This returns the path to the source of this plugin.
+    #
+    # @return [Pathname]
+    def self.source_root
+      @source_root ||= Pathname.new(File.expand_path("../../", __FILE__))
+    end
+  end
+end

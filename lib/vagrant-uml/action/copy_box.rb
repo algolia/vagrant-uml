@@ -1,4 +1,4 @@
-module Vagrant
+module VagrantPlugins
   module UML
     module Action
       class CopyBox

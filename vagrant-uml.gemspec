@@ -5,7 +5,7 @@ require 'vagrant-uml/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "vagrant-uml"
-  spec.version       = Vagrant::Uml::VERSION
+  spec.version       = VagrantPlugins::UML::VERSION
   spec.authors       = ["Martin Naumann"]
   spec.email         = ["martin.naumann@centralway.com"]
   spec.description   = "Usermode Linux provider for Vagrant"
