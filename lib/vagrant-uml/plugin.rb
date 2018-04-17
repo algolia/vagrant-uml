@@ -4,6 +4,7 @@ rescue LoadError
   raise "The Vagrant UML plugin must be run within Vagrant."
 end
 
+
 module VagrantPlugins
   module UML
     class Plugin < Vagrant.plugin("2")
@@ -13,9 +14,18 @@ module VagrantPlugins
       UML-based virtual machines.
       EOF
 
+      config(:uml, :provider) do
+        require_relative "config"
+        Config
+      end
+
       provider(:uml) do
+        # Setup i18n
+        setup_i18n
+
+        # Return the provider
         require_relative "provider"
-        Vagrant::UML::Provider
+        Provider
       end
 
       # This initializes the internationalization strings.
