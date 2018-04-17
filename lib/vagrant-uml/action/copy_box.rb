@@ -7,7 +7,7 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:ui].info "Copying box..."
+          env[:ui].info (I18n.t("vagrant_uml.copying"))
           FileUtils.cp_r(Dir.glob(env[:machine].box.directory.to_s + "/*"), env[:machine].data_dir)
           @app.call(env)
         end

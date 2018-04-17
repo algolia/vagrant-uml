@@ -7,7 +7,7 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:ui].info(I18n.t("vagrant_uml.already_status", :status => "created"))
+          env[:ui].info (I18n.t("vagrant_uml.already_status", :status => "created"))
           @app.call(env)
         end
       end
