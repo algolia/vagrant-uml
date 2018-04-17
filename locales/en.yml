@@ -8,6 +8,8 @@ en:
       Machine is booted and ready for use!
     starting: |-
       Starting the instance...
+    started: |-
+      Instance started successfully.
     stopping: |-
       Stopping the instance...
     terminating: |-
@@ -19,3 +21,12 @@ en:
     will_not_destroy: |-
       The instance '%{name}' will not be destroyed, since the confirmation
       was declined.
+    copying: |-
+      Copying box...
+    errors:
+      wrong_os: |-
+        User Mode Linux (UML) can only run on Linux host!
+      config:
+        create_args_array: |-
+          create_args should be an array of strings
+
