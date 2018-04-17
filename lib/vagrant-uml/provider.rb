@@ -1,9 +1,20 @@
 require "vagrant/ui"
+require "log4r"
+require 'vagrant/util/platform'
 
 module VagrantPlugins
   module UML
     class Provider < Vagrant.plugin("2", :provider)
       def initialize(machine)
+        @logger  = Log4r::Logger.new("vagrant::provider::uml")
+        if !Vagrant::Util::Platform.linux?
+          @logger.info (I18n.t("vagrant_uml.errors.wrong_os"))
+          raise Vagrant::Errors::ProviderNotUsable,
+            machine: machine.name,
+            provider: 'uml',
+            message: I18n.t("vagrant_uml.errors.wrong_os")
+        end
+
         @machine = machine
       end
 
