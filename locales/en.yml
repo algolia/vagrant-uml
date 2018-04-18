@@ -27,18 +27,15 @@ en:
       Validating box contents
     setting_box: |-
       Setting box options on environment
-      
-
     errors:
       wrong_os: |-
         User Mode Linux (UML) can only run on Linux host!
-    kernel_file_missing: |-
+      kernel_file_missing: |-
         The kernel binary used for creating the UML instance was not found for %{name}
         box.
-    rootfs_file_lissing: |-
+      rootfs_file_lissing: |-
         The rootfs archive used for creating the UML instance was not found for %{name}
         box.
-
       config:
         create_args_array: |-
           create_args should be an array of strings
