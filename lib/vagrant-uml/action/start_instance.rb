@@ -1,4 +1,6 @@
 require 'pp'
+require "log4r"
+
 module VagrantPlugins
   module UML
     module Action
