@@ -1,0 +1,98 @@
+require "vagrant/util/retryable"
+require "vagrant/util/subprocess"
+
+module Vagrant
+  module UML
+    class cli
+
+      def initialize
+        @logger       = Log4r::Logger.new("vagrant::uml::cli")
+      end
+
+      def state
+        if @name && run("uml_console" , @name , "version")
+         if $1 =~ /^OK/
+           :running
+         else
+           :unknown
+         end
+       elsif
+         :unknown
+       end
+      end
+
+      private
+      def run(*command)
+        options = command.last.is_a?(Hash) ? command.last : {}
+        execute *(['/usr/bin/env'] + command)
+      end
+
+      # TODO: Review code below this line, it was pretty much a copy and
+      #       paste from VirtualBox base driver and has no tests
+      def execute(*command, &block)
+        # Get the options hash if it exists
+        opts = {}
+        opts = command.pop if command.last.is_a?(Hash)
+
+        tries = 0
+        tries = 3 if opts[:retryable]
+
+        sleep = opts.fetch(:sleep, 1)
+
+        # Variable to store our execution result
+        r = nil
+
+        retryable(:on => LXC::Errors::ExecuteError, :tries => tries, :sleep => sleep) do
+          # Execute the command
+          r = raw(*command, &block)
+
+################################################################################
+## Need to change this as the uml_console XXXX version return 1 when the machine
+## does not exists (nedd to rely on something to get the status
+##  the best way would be to add a "status" command to uml_console to know is the
+##  machine exists, is frozen , ...
+          # If the command was a failure, then raise an exception that is
+          # nicely handled by Vagrant.
+          if r.exit_code != 0
+            if @interrupted
+              raise LXC::Errors::SubprocessInterruptError, command.inspect
+            else
+              raise LXC::Errors::ExecuteError,
+                command: command.inspect, stderr: r.stderr, stdout: r.stdout, exitcode: r.exit_code
+            end
+          end
+###################################################################################
+        end
+
+################################################################################
+## We probably dont care about this as UML is only running on Linux hosts !
+        # Return the output, making sure to replace any Windows-style
+        # newlines with Unix-style.
+        stdout = r.stdout.gsub("\r\n", "\n")
+        if opts[:show_stderr]
+          { :stdout => stdout, :stderr => r.stderr.gsub("\r\n", "\n") }
+        else
+          stdout
+        end
+###################################################################################
+      end
+
+      def raw(*command, &block)
+        int_callback = lambda do
+          @interrupted = true
+          @logger.info("Interrupted.")
+        end
+
+        # Append in the options for subprocess
+        command << { :notify => [:stdout, :stderr] }
+
+        Vagrant::Util::Busy.busy(int_callback) do
+          Vagrant::Util::Subprocess.execute(*command, &block)
+        end
+      end
+
+    end
+  end
+end
+
+        
