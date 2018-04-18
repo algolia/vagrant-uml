@@ -10,15 +10,23 @@ module Vagrant
       end
 
       def state
-        if @name && run("uml_console" , @name , "version")
-         if $1 =~ /^OK/
-           :running
-         else
-           :unknown
-         end
-       elsif
-         :unknown
-       end
+        if !@name
+          return :unknown
+        else
+          begin
+            if @name && run("uml_console" , @name , "version")
+              if $1 =~ /^OK/
+                return :running
+              else
+                :unknown
+              end
+            end
+          rescue
+            ## We should try to figure out if the machine is stopped, not_created, ...
+            #   test if the cow file exists ?
+            return :not_running
+          end
+        end
       end
 
       private
