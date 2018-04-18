@@ -9,11 +9,17 @@ module VagrantPlugins
       Builtin = Vagrant::Action::Builtin
       Builder = Vagrant::Action::Builder
 
+      # This action brings the machine up from nothing, including creating the
+      # container, configuring metadata, and booting.
       def self.action_up(machine)
         Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
-          b.use Builtin::HandleBox
-          b.use CopyBox
+          b.use Builtin::Call, Builtin::IsState, :not_created do |env, b2|
+            # If the VM is NOT created yet, then do the setup steps
+            if env[:result]
+              b.use Builtin::HandleBox
+              b.use HandleBoxMetadata
+              #b.use CopyBox
           b.use StartInstance
         end
       end
