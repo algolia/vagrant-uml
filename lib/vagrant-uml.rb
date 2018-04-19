@@ -6,7 +6,7 @@ module VagrantPlugins
   module UML
     lib_path = Pathname.new(File.expand_path("../vagrant-uml", __FILE__))
     autoload :Action, lib_path.join("action")
-    #autoload :Errors, lib_path.join("errors")
+    autoload :Errors, lib_path.join("errors")
     # This returns the path to the source of this plugin.
     #
     # @return [Pathname]
