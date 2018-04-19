@@ -27,6 +27,12 @@ en:
       Validating box contents
     setting_box: |-
       Setting box options on environment
+
+    config:
+      create_args_array: |-
+        create_args should be an array of strings
+
+  vagrant:
     errors:
       uml_interrupt_error: |-
         Interrupted
@@ -48,7 +54,4 @@ en:
       uml_rootfs_missing: |-
         The rootfs archive used for creating the UML instance was not found for %{name}
         box.
-      config:
-        create_args_array: |-
-          create_args should be an array of strings
 
