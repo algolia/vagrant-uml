@@ -1,5 +1,5 @@
 require "log4r"
-module Vagrant
+module VagrantPlugins
   module UML
     module Action
       class HandleBoxMetadata
@@ -42,17 +42,17 @@ module Vagrant
 
         def validate_box
           unless SUPPORTED_VERSIONS.include? box_version
-            raise Errors::IncompatibleBox.new name: @box.name,
+            raise UML::Errors::IncompatibleBox.new name: @box.name,
                                               found: box_version,
                                               supported: SUPPORTED_VERSIONS.join(', ')
           end
 
           unless File.exists?(kernel_bin)
-            raise Errors::TemplateFileMissing.new name: @box.name
+            raise UML::Errors::KernelFileMissing.new name: @box.name
           end
 
           unless File.exists?(rootfs_archive)
-            raise Errors::RootFSTarballMissing.new name: @box.name
+            raise UML::Errors::RootFSlMissing.new name: @box.name
           end
         end
 

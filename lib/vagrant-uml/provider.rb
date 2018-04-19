@@ -1,19 +1,19 @@
-require "vagrant/ui"
-require "log4r"
+require 'vagrant/ui'
+require 'log4r'
 require 'vagrant/util/platform'
+require 'vagrant-uml/errors'
 
 module VagrantPlugins
   module UML
     class Provider < Vagrant.plugin("2", :provider)
 
       def initialize(machine)
+
         @logger  = Log4r::Logger.new("vagrant::provider::uml")
+        # Just check if we're running on a linux host
         if !Vagrant::Util::Platform.linux?
           @logger.info (I18n.t("vagrant_uml.errors.wrong_os"))
-          raise Vagrant::Errors::ProviderNotUsable,
-            machine: machine.name,
-            provider: 'uml',
-            message: I18n.t("vagrant_uml.errors.wrong_os")
+          raise UML::Errors::LinuxRequired
         end
 
         @machine = machine
@@ -24,7 +24,7 @@ module VagrantPlugins
         # exists, otherwise return nil to show that we don't support the
         # given action.
         action_method = "action_#{name}"
-        return Action.send(action_method, @machine) if Action.respond_to?(action_method)
+        return Action.send(action_method) if Action.respond_to?(action_method)
         nil
       end
 
@@ -32,12 +32,8 @@ module VagrantPlugins
         nil
       end
 
-      def machine_id_changed
-        nil
-      end
-
       def state
-        env = @machine.action("read_state", lock: false)
+        env = @machine.action("read_state")
         state_id = env[:machine_state_id]
         state_id = :unknown if !state_id
 
