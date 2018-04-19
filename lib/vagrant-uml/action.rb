@@ -18,11 +18,12 @@ module VagrantPlugins
             # If the VM is NOT created yet, then do the setup steps
             b2.use Builtin::Message, I18n.t("vagrant_uml.messages.not_created")
             if env[:result]
-              b.use Builtin::HandleBox
-              b.use HandleBoxMetadata
-              #b.use CopyBox
-              #b.use Create
+              b2.use Builtin::HandleBox
+              b2.use HandleBoxMetadata
+              #b2.use CopyBox
+              #b2.use Create
             end
+          end
           b.use StartInstance
         end
       end
