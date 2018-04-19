@@ -20,7 +20,7 @@ module VagrantPlugins
             if env[:result]
               b2.use Builtin::HandleBox
               b2.use HandleBoxMetadata
-              #b2.use CopyBox
+              b2.use CopyBox
               #b2.use Create
             end
           end
@@ -31,7 +31,7 @@ module VagrantPlugins
       # This action is called to halt the machine.
       def self.action_halt
         Vagrant::Action::Builder.new.tap do |b|
-#          b.use Builtin::ConfigValidate
+          b.use Builtin::ConfigValidate
           b.use Call, IsCreated do |env, b2|
             if !env[:result]
               b2.use MessageNotCreated
@@ -48,7 +48,7 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use Call, DestroyConfirm do |env, b2|
             if env[:result]
-#             b2.use Builtin::ConfigValidate
+              b2.use Builtin::ConfigValidate
               b2.use Call, IsCreated do |env2, b3|
                 if !env2[:result]
                   b3.use MessageNotCreated
@@ -68,7 +68,7 @@ module VagrantPlugins
       # This action is called to SSH into the machine.
       def self.action_ssh
         Vagrant::Action::Builder.new.tap do |b|
-#          b.use Builtin::ConfigValidate
+          b.use Builtin::ConfigValidate
           b.use Call, IsCreated do |env, b2|
             if !env[:result]
               b2.use MessageNotCreated
@@ -82,7 +82,7 @@ module VagrantPlugins
 
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
-#          b.use Builtin::ConfigValidate
+          b.use Builtin::ConfigValidate
           b.use Call, IsCreated do |env, b2|
             if !env[:result]
               b2.use MessageNotCreated
