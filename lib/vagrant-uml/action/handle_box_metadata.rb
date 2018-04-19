@@ -27,7 +27,11 @@ module VagrantPlugins
         end
 
         def kernel_bin
-          @kernel_bin ||= (box_template = @box.directory.join('linux')).to_s
+          if (kernel_ver = @box.metadata.fetch('kernel_version').to_s)
+            @kernel_bin ||= (box_template = @box.directory.join('linux-'+kernel_ver)).to_s
+          else
+            @kernel_bin ||= (box_template = @box.directory.join('linux')).to_s
+          end
         end
 
         def template_opts
@@ -37,7 +41,9 @@ module VagrantPlugins
         end
 
         def rootfs_archive
-          @rootfs_archive ||= @box.directory.join('rootfs.gz').to_s
+          rootfs_file ||= @box.metadata.fetch('rootfs').to_s
+          rootfs_file ||= 'rootfs.gz'
+          @rootfs_archive ||= @box.directory.join(rootfs).to_s
         end
 
         def validate_box
@@ -53,7 +59,7 @@ module VagrantPlugins
           end
 
           unless File.exists?(rootfs_archive)
-            raise UML::Errors::RootFSlMissing.new name: @box.name,
+            raise UML::Errors::RootFSMissing.new name: @box.name,
                                                   rootfs: rootfs_archive
           end
         end
