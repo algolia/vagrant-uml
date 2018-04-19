@@ -8,7 +8,8 @@ module VagrantPlugins
 
         def call(env)
           env[:ui].info (I18n.t("vagrant_uml.copying"))
-          FileUtils.cp_r(Dir.glob(env[:machine].box.directory.to_s + "/*"), env[:machine].data_dir)
+          FileUtils.cp_r(Dir.glob(env[:machine].box.directory.to_s + "/metadata.json"), env[:machine].data_dir)
+          FileUtils.ln_s(Dir.glob(env[:machine].box.directory.to_s + "/"+env[:kernel_bin]), env[:machine].data_dir + "/run")
           @app.call(env)
         end
       end
