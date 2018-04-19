@@ -13,13 +13,14 @@ module VagrantPlugins
       # container, configuring metadata, and booting.
       def self.action_up(machine)
         Builder.new.tap do |b|
-          b.use Builtin::ConfigValidate
           b.use Builtin::Call, Builtin::IsState, :not_created do |env, b2|
             # If the VM is NOT created yet, then do the setup steps
             if env[:result]
               b.use Builtin::HandleBox
               b.use HandleBoxMetadata
               #b.use CopyBox
+            end
+          b.use Builtin::ConfigValidate
           b.use StartInstance
         end
       end
@@ -44,7 +45,7 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use Call, DestroyConfirm do |env, b2|
             if env[:result]
-#              b2.use ConfigValidate
+#             b2.use ConfigValidate
               b2.use Call, IsCreated do |env2, b3|
                 if !env2[:result]
                   b3.use MessageNotCreated
