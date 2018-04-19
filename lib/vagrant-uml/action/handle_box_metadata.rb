@@ -27,11 +27,13 @@ module VagrantPlugins
         end
 
         def kernel_bin
-          if (kernel_ver = @box.metadata.fetch('kernel_version').to_s)
-            @kernel_bin ||= (box_template = @box.directory.join('linux-'+kernel_ver)).to_s
-          else
-            @kernel_bin ||= (box_template = @box.directory.join('linux')).to_s
+          begin
+            if (kernel_ver = @box.metadata.fetch('kernel_version').to_s)
+              @kernel_bin ||= (box_template = @box.directory.join('linux-'+kernel_ver)).to_s
+            end
+            rescue
           end
+          @kernel_bin ||= (box_template = @box.directory.join('linux')).to_s
         end
 
         def template_opts
@@ -41,9 +43,12 @@ module VagrantPlugins
         end
 
         def rootfs_archive
-          rootfs_file ||= @box.metadata.fetch('rootfs').to_s
+          begin
+            rootfs_file ||= @box.metadata.fetch('rootfs').to_s
+            rescue
+          end
           rootfs_file ||= 'rootfs.gz'
-          @rootfs_archive ||= @box.directory.join(rootfs).to_s
+          @rootfs_archive ||= @box.directory.join(rootfs_file).to_s
         end
 
         def validate_box
