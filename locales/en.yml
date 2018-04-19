@@ -28,24 +28,24 @@ en:
     setting_box: |-
       Setting box options on environment
     errors:
-      interrupt_error: |-
+      uml_interrupt_error: |-
         Interrupted
-      incompatible_box: |-
+      uml_incompatible_box: |-
         The base box you are trying to use is not compatible with the installed
         vagrant-uml version. Supported box versions are %{supported} but %{found} was found.
-      execute_error: |-
+      uml_execute_error: |-
         There was an error executing %{command}
 
         For more information on the failure, enable detailed logging by setting
         the environment variable VAGRANT_LOG to DEBUG.
-      linux_required: |-
+      uml_linux_required: |-
         User Mode Linux (UML) can only run on Linux host!
       uml_not_installed: |-
         The `uml-utilities` package does not seem to be installed or `uml_console` is not accessible on the PATH.
-      kernel_file_missing: |-
+      uml_kernel_missing: |-
         The kernel binary used for creating the UML instance was not found for %{name}
         box.
-      rootfs_missing: |-
+      uml_rootfs_missing: |-
         The rootfs archive used for creating the UML instance was not found for %{name}
         box.
       config:

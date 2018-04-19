@@ -4,7 +4,7 @@ module VagrantPlugins
   module UML
     module Errors
       class ExecuteError < Vagrant::Errors::VagrantError
-        error_key(:execute_error)
+        error_key(:uml_execute_error)
         attr_reader :stderr, :stdout, :exitcode
         def initialize(message, *args)
           super
@@ -18,7 +18,7 @@ module VagrantPlugins
 
       # Raised when user interrupts a subprocess
       class SubprocessInterruptError < Vagrant::Errors::VagrantError
-        error_key(:interrupt_error)
+        error_key(:uml_interrupt_error)
         def initialize(message, *args)
           super
         end
@@ -26,7 +26,7 @@ module VagrantPlugins
 
 
       class LinuxRequired < Vagrant::Errors::VagrantError
-        error_key(:linux_required)
+        error_key(:uml_linux_required)
       end
 
       class UmlNotInstalled < Vagrant::Errors::VagrantError
@@ -43,13 +43,13 @@ module VagrantPlugins
 
       # Box related errors
       class KernelFileMissing < Vagrant::Errors::VagrantError
-        error_key(:kernel_file_missing)
+        error_key(:uml_kernel_missing)
       end
       class RootFSMissing < Vagrant::Errors::VagrantError
-        error_key(:rootfs_missing)
+        error_key(:uml_rootfs_missing)
       end
       class IncompatibleBox < Vagrant::Errors::VagrantError
-        error_key(:incompatible_box)
+        error_key(:uml_incompatible_box)
       end
       class RedirNotInstalled < Vagrant::Errors::VagrantError
         error_key(:lxc_redir_not_installed)
