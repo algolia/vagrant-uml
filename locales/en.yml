@@ -49,9 +49,9 @@ en:
       uml_not_installed: |-
         The `uml-utilities` package does not seem to be installed or `uml_console` is not accessible on the PATH.
       uml_kernel_missing: |-
-        The kernel binary used for creating the UML instance was not found for %{name}
+        The kernel binary '%{kernel}' used for creating the UML instance was not found for %{name}
         box.
       uml_rootfs_missing: |-
-        The rootfs archive used for creating the UML instance was not found for %{name}
+        The rootfs archive '%{rootfs}' used for creating the UML instance was not found for %{name}
         box.
 

@@ -48,11 +48,13 @@ module VagrantPlugins
           end
 
           unless File.exists?(kernel_bin)
-            raise UML::Errors::KernelFileMissing.new name: @box.name
+            raise UML::Errors::KernelFileMissing.new name: @box.name,
+                                                 kernel: kernel_bin
           end
 
           unless File.exists?(rootfs_archive)
-            raise UML::Errors::RootFSlMissing.new name: @box.name
+            raise UML::Errors::RootFSlMissing.new name: @box.name,
+                                                  rootfs: rootfs_archive
           end
         end
 
