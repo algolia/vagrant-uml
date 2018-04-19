@@ -3,7 +3,7 @@ require "vagrant/util/subprocess"
 
 module Vagrant
   module UML
-    class cli
+    class Cli
 
       def initialize
         @logger       = Log4r::Logger.new("vagrant::uml::cli")
@@ -50,7 +50,7 @@ module Vagrant
         # Variable to store our execution result
         r = nil
 
-        retryable(:on => LXC::Errors::ExecuteError, :tries => tries, :sleep => sleep) do
+        retryable(:on => UML::Errors::ExecuteError, :tries => tries, :sleep => sleep) do
           # Execute the command
           r = raw(*command, &block)
 
@@ -63,9 +63,9 @@ module Vagrant
           # nicely handled by Vagrant.
           if r.exit_code != 0
             if @interrupted
-              raise LXC::Errors::SubprocessInterruptError, command.inspect
+              raise UML::Errors::SubprocessInterruptError, command.inspect
             else
-              raise LXC::Errors::ExecuteError,
+              raise UML::Errors::ExecuteError,
                 command: command.inspect, stderr: r.stderr, stdout: r.stdout, exitcode: r.exit_code
             end
           end
