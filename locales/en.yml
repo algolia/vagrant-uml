@@ -54,4 +54,6 @@ en:
       uml_rootfs_missing: |-
         The rootfs archive '%{rootfs}' used for creating the UML instance was not found for %{name}
         box.
+      uml_start_error: |-
+        An error occured during the UML instance start (exitcode = %{exitcode}).
 

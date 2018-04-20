@@ -33,12 +33,16 @@ module VagrantPlugins
         error_key(:uml_not_installed)
       end
 
-      class ContainerAlreadyExists < Vagrant::Errors::VagrantError
-        error_key(:lxc_container_already_exists)
+      class InstanceAlreadyExists < Vagrant::Errors::VagrantError
+        error_key(:uml_instance_already_exists)
       end
 
       class CommandNotSupported < Vagrant::Errors::VagrantError
-        error_key(:lxc_command_not_supported)
+        error_key(:uml_command_not_supported)
+      end
+
+      class StartError < Vagrant::Errors::VagrantError
+        error_key(:uml_start_error)
       end
 
       # Box related errors
