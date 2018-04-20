@@ -20,7 +20,7 @@ module VagrantPlugins
             if env[:result]
               b2.use Builtin::HandleBox
               b2.use HandleBoxMetadata
-              b2.use CopyBox
+              b2.use Create
               #b2.use Create
             end
           end
@@ -106,7 +106,7 @@ module VagrantPlugins
 
       # The autoload farm
       action_root = Pathname.new(File.expand_path("../action", __FILE__))
-      autoload :CopyBox, action_root.join("copy_box")
+      autoload :Create, action_root.join("create")
       autoload :StartInstance, action_root.join("start_instance")
       autoload :StopInstance, action_root.join("stop_instance")
       autoload :HandleBoxMetadata, action_root.join("handle_box_metadata")
