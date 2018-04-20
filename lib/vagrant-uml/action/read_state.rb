@@ -9,7 +9,7 @@ module VagrantPlugins
       class ReadState
         def initialize(app, env)
           @app    = app 
-          @cli            = CLI.new(env[:machine].name)
+          @cli    = CLI.new(env[:machine].name)
           @logger = Log4r::Logger.new("vagrant::uml::action::read_state")
         end
 
