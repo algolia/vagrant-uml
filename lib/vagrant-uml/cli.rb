@@ -34,12 +34,12 @@ module VagrantPlugins
         end
       end
 
-      private
       def run(*command)
         options = command.last.is_a?(Hash) ? command.last : {}
         execute *(['/usr/bin/env'] + command)
       end
 
+      private
       # TODO: Review code below this line, it was pretty much a copy and
       #       paste from VirtualBox base driver and has no tests
       def execute(*command, &block)
