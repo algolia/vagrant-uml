@@ -3,9 +3,11 @@ require "vagrant/util/subprocess"
 
 module Vagrant
   module UML
-    class Cli
+    class CLI
+      attr_accessor :name
 
-      def initialize
+      def initialize(name = nil)
+        @name = name
         @logger       = Log4r::Logger.new("vagrant::uml::cli")
       end
 
