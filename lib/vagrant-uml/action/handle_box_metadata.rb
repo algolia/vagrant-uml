@@ -47,7 +47,7 @@ module VagrantPlugins
             rootfs_file ||= @box.metadata.fetch('rootfs').to_s
             rescue
           end
-          rootfs_file ||= 'rootfs.gz'
+          rootfs_file ||= 'rootfs'
           @rootfs_archive ||= @box.directory.join(rootfs_file).to_s
         end
 
