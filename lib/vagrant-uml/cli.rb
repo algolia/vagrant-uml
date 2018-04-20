@@ -1,7 +1,7 @@
 require "vagrant/util/retryable"
 require "vagrant/util/subprocess"
 
-module Vagrant
+module VagrantPlugins
   module UML
     class CLI
       attr_accessor :name
