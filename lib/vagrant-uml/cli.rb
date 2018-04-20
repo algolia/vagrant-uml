@@ -4,6 +4,7 @@ require "vagrant/util/subprocess"
 module VagrantPlugins
   module UML
     class CLI
+      include Vagrant::Util::Retryable
       attr_accessor :name
 
       def initialize(name = nil)
