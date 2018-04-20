@@ -16,14 +16,17 @@ module Vagrant
           begin
             if @name && run("uml_console" , @name , "version")
               if $1 =~ /^OK/
+                @logger.debug( "Cli.state: instance is running")
                 return :running
               else
-                :unknown
+                @logger.debug( "Cli.state: instance is in unknown state")
+                return :unknown
               end
             end
           rescue
             ## We should try to figure out if the machine is stopped, not_created, ...
             #   test if the cow file exists ?
+            @logger.debug( "Cli.state: instance is not running")
             return :not_running
           end
         end
