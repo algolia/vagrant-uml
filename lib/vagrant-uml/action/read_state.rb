@@ -9,6 +9,7 @@ module VagrantPlugins
       class ReadState
         def initialize(app, env)
           @app    = app 
+          @cli            = CLI.new(env[:machine].name)
           @logger = Log4r::Logger.new("vagrant::uml::action::read_state")
         end
 
@@ -20,7 +21,7 @@ module VagrantPlugins
         def read_state(machine)
           return :not_created if machine.id.nil?
           # Return the state
-          return @cli.state
+          @cli.state
         end
       end 
     end 
