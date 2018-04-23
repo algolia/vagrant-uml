@@ -76,7 +76,7 @@ module VagrantPlugins
 ##  machine exists, is frozen , ...
           # If the command was a failure, then raise an exception that is
           # nicely handled by Vagrant.
-          if r.exit_code != 0 && r.exited && !@options[:detach]
+          if r.exit_code != 0 && r.exited? && !@options[:detach]
             if @interrupted
               raise UML::Errors::SubprocessInterruptError, command.inspect
             else
@@ -113,6 +113,7 @@ module VagrantPlugins
         @process = process = ChildProcess.build(*@command)
         process.leader = true
         process.detach = false
+        process.duplex = true
         process.detach ||= @options[:detach]
         process.cwd = workdir
         #process.io.stdout ||= @options[:stdout]
