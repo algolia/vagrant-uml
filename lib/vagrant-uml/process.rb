@@ -1,12 +1,15 @@
 require 'childprocess'
 require 'log4r'
+require 'tempfile'
 
+require "vagrant/util/retryable"
 require 'vagrant/util/which'
 
 
 module VagrantPlugins
   module UML
     class Process
+      include Vagrant::Util::Retryable
 
       # Convenience method for executing a method.
       def self.execute(*command, &block)
@@ -52,9 +55,9 @@ module VagrantPlugins
       def execute(*command, &block)
 
         tries = 0
-        tries = 3 if options[:retryable]
+        tries = 3 if @options[:retryable]
 
-        sleep = options.fetch(:sleep, 1)
+        sleep = @options.fetch(:sleep, 1)
 
         # Variable to store our execution result
         r = nil
@@ -75,7 +78,7 @@ module VagrantPlugins
               raise UML::Errors::SubprocessInterruptError, command.inspect
             else
               raise UML::Errors::ExecuteError,
-                command: command.inspect, stderr: r.stderr, stdout: r.stdout, exitcode: r.exit_code
+                command: command.inspect, stderr: r.io.stderr, stdout: r.io.stdout, exitcode: r.exit_code
             end
           end
 ###################################################################################
@@ -106,15 +109,15 @@ module VagrantPlugins
 
         @logger.info("Starting process: #{@command.inspect}")
         @process = process = ChildProcess.build(*@command)
-        process.spawn = true
+        #process.posix_spawn = true
         process.leader = true
         process.detach ||= @options[:detach]
         process.detach &&= false
         process.cwd = workdir
         process.detach ||= @options[:detach]
-        process.io.stdout ||= @options[:stdout]
+        #process.io.stdout ||= @options[:stdout]
         process.io.stdout ||= Tempfile.new("out.txt")
-        process.io.stderr ||= @options[:stderr]
+        #process.io.stderr ||= @options[:stderr]
         process.io.stderr ||= Tempfile.new("err.txt")
 
 
