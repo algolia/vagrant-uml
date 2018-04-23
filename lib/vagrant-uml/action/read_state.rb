@@ -21,7 +21,7 @@ module VagrantPlugins
         def read_state(machine)
           return :not_created if machine.id.nil?
           # Return the state
-          @cli.state
+          @cli.state(machine.id)
         end
       end 
     end 
