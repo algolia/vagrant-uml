@@ -14,7 +14,8 @@ module VagrantPlugins
           env[:ui].info (I18n.t("vagrant_uml.starting"))
 
           begin
-            @cli.run_uml( :data_dir => env[:machine].data_dir.to_s,
+            @cli.run_uml( env[:machine].data_dir.to_s + "/run",
+              :data_dir => env[:machine].data_dir.to_s,
               :machine_id => env[:machine].id,
               :rootfs => env[:uml_rootfs],
               :mem => 256,
