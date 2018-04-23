@@ -37,13 +37,13 @@ module VagrantPlugins
         end
       end
 
-      def run_uml(env,*command)
+      def run_uml(*command)
         options = command.last.is_a?(Hash) ? command.pop : {}
         command = command.dup
 
         # umdir should probably be set to data_dir to prevent zombies sockets 
         process = Process.new(
-          options[:data_dir] + "/run" ,
+          command[0],
           "ubda=cow,#{options[:rootfs]}" ,
           "umid=#{options[:machine_id]}" ,
           "mem=#{options[:mem]}m" ,
