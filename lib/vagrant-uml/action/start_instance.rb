@@ -14,13 +14,16 @@ module VagrantPlugins
           env[:ui].info (I18n.t("vagrant_uml.starting"))
 
           begin
-   
             @cli.run_uml( :data_dir => env[:machine].data_dir.to_s,
-              :machine_name => env[:machine].name,
-              :rootfs => env[:rootfs],
+              :machine_id => env[:machine].id,
+              :rootfs => env[:uml_rootfs],
               :mem => 256,
               :cpu => 1,
-              :eth0 => "tuntap,tap1,,192.168.1.254 con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null"
+              :eth0 => "tuntap,tap1,,192.168.1.254",
+              :con0 => "con0=null,fd:stderr.txt",
+              :con1 => "con1=null,fd:stdout.txt",
+              :con => "con=pts",
+              :ssl => "ssl=null"
             )
           rescue UML::Errors::ExecuteError => e
             # Execution error, we were not able to start the UML instance
