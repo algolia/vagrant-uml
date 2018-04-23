@@ -14,14 +14,13 @@ module VagrantPlugins
       def self.action_up
         Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
+          b.use Builtin::HandleBox
+          b.use HandleBoxMetadata
           b.use Builtin::Call, Builtin::IsState, :not_created do |env, b2|
             # If the VM is NOT created yet, then do the setup steps
             b2.use Builtin::Message, I18n.t("vagrant_uml.messages.not_created")
             if env[:result]
-              b2.use Builtin::HandleBox
-              b2.use HandleBoxMetadata
               b2.use Create
-              #b2.use Create
             end
           end
           b.use StartInstance
