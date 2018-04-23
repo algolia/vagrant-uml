@@ -17,14 +17,15 @@ module VagrantPlugins
       end
 
       def initialize(*command)
+        @logger  = Log4r::Logger.new("vagrant::uml::process")
         @options = command.last.is_a?(Hash) ? command.pop : {}
         @command = command.dup
+        @logger.debug("Starting process with command: #{@command.inspect}")
         @command[0] = Which.which(@command[0]) if !File.file?(@command[0])
         if !@command[0]
           raise Errors::CommandUnavailable, file: command[0]
         end
-
-        @logger  = Log4r::Logger.new("vagrant::util::subprocess")
+        @command.join(" ")
       end
 
       def run
@@ -56,6 +57,8 @@ module VagrantPlugins
 
         tries = 0
         tries = 3 if @options[:retryable]
+        # Ensure detachable process are ,not retryable
+        tries = 0 if @options[:detach]
 
         sleep = @options.fetch(:sleep, 1)
 
@@ -68,12 +71,12 @@ module VagrantPlugins
 
 ################################################################################
 ## Need to change this as the uml_console XXXX version return 1 when the machine
-## does not exists (nedd to rely on something to get the status
+## does not exists (need to rely on something to get the status)
 ##  the best way would be to add a "status" command to uml_console to know is the
 ##  machine exists, is frozen , ...
           # If the command was a failure, then raise an exception that is
           # nicely handled by Vagrant.
-          if r.exit_code != 0
+          if r.exit_code != 0 && r.exited && !@options[:detach]
             if @interrupted
               raise UML::Errors::SubprocessInterruptError, command.inspect
             else
@@ -88,13 +91,14 @@ module VagrantPlugins
 ## We probably dont care about this as UML is only running on Linux hosts !
         # Return the output, making sure to replace any Windows-style
         # newlines with Unix-style.
-        stdout = r.stdout.gsub("\r\n", "\n")
-        if options[:show_stderr]
-          { :stdout => stdout, :stderr => r.stderr.gsub("\r\n", "\n") }
-        else
-          stdout
-        end
+#        stdout = r.stdout.gsub("\r\n", "\n")
+#        if options[:show_stderr]
+#          { :stdout => stdout, :stderr => r.stderr.gsub("\r\n", "\n") }
+#        else
+#          stdout
+#        end
 ###################################################################################
+      return r
       end
 
       def raw(*command, &block)
@@ -106,24 +110,23 @@ module VagrantPlugins
 ###### From vagrant Subprocess  #################
         # Get the working directory
         workdir = @options[:workdir] || Dir.pwd
-
-        @logger.info("Starting process: #{@command.inspect}")
         @process = process = ChildProcess.build(*@command)
-        #process.posix_spawn = true
         process.leader = true
+        process.detach = false
         process.detach ||= @options[:detach]
-        process.detach &&= false
         process.cwd = workdir
-        process.detach ||= @options[:detach]
         #process.io.stdout ||= @options[:stdout]
-        process.io.stdout ||= Tempfile.new("out.txt")
+        process.io.stdout ||= File.new("out.txt",File::CREAT|File::TRUNC|File::RDWR, 0640)
         #process.io.stderr ||= @options[:stderr]
-        process.io.stderr ||= Tempfile.new("err.txt")
+        process.io.stderr ||= File.new("err.txt",File::CREAT|File::TRUNC|File::RDWR, 0640)
 
 
         Vagrant::Util::Busy.busy(int_callback) do
+          @logger.debug("Starting process: #{@command.inspect}")
           process.start
+          process.io.stdin.close
         end
+        return process
       end
 
     end
