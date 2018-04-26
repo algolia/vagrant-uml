@@ -31,11 +31,7 @@ module VagrantPlugins
       def self.action_halt
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
-          b.use Builtin::Call, Builtin::IsState, :not_created do |env, b2|
-            if env[:result]
-              b2.use MessageNotCreated
-              next
-            end
+          b.use Builtin::Call, Builtin::IsState, :running do |env, b2|
             b2.use StopInstance
           end
         end
