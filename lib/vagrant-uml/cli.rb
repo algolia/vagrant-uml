@@ -32,6 +32,7 @@ module VagrantPlugins
         end
       end
 
+
       def run_uml(*command)
         options = command.last.is_a?(Hash) ? command.pop : {}
         command = command.dup
