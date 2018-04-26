@@ -31,12 +31,11 @@ module VagrantPlugins
       def self.action_halt
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
-          b.use Call, IsCreated do |env, b2|
+          b.use Builtin::Call, Builtin::IsCreated do |env, b2|
             if !env[:result]
               b2.use MessageNotCreated
               next
             end
-
             b2.use StopInstance
           end
         end
@@ -45,16 +44,16 @@ module VagrantPlugins
       # This action is called to terminate the machine.
       def self.action_destroy
         Vagrant::Action::Builder.new.tap do |b|
-          b.use Call, DestroyConfirm do |env, b2|
+          b.use Builtin::Call, Builtin::DestroyConfirm do |env, b2|
             if env[:result]
               b2.use Builtin::ConfigValidate
-              b2.use Call, IsCreated do |env2, b3|
+              b2.use Builtin::Call, Builtin::IsCreated do |env2, b3|
                 if !env2[:result]
                   b3.use MessageNotCreated
                   next
                 end
 
-                b3.use ProvisionerCleanup, :before if defined?(ProvisionerCleanup)
+                b3.use Builtin::ProvisionerCleanup, :before if defined?(Builtin::ProvisionerCleanup)
               end
             else
               b2.use MessageWillNotDestroy
@@ -68,13 +67,13 @@ module VagrantPlugins
       def self.action_ssh
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
-          b.use Call, IsCreated do |env, b2|
+          b.use Builtin::Call, Builtin::IsCreated do |env, b2|
             if !env[:result]
               b2.use MessageNotCreated
               next
             end
 
-            b2.use SSHExec
+            b2.use Builtin::SSHExec
           end
         end
       end
@@ -82,13 +81,13 @@ module VagrantPlugins
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
-          b.use Call, IsCreated do |env, b2|
+          b.use Builtin::Call, Builtin::IsCreated do |env, b2|
             if !env[:result]
               b2.use MessageNotCreated
               next
             end
 
-            b2.use SSHRun
+            b2.use Builtin::SSHRun
           end
         end
       end
