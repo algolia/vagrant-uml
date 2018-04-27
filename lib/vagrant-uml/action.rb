@@ -16,14 +16,23 @@ module VagrantPlugins
           b.use Builtin::ConfigValidate
           b.use Builtin::HandleBox
           b.use HandleBoxMetadata
-          b.use Builtin::Call, Builtin::IsState, :not_created do |env, b2|
-            # If the VM is NOT created yet, then do the setup steps
-            b2.use Builtin::Message, I18n.t("vagrant_uml.messages.not_created")
+          b.use Builtin::Call, IsCreated do |env, b1|
             if env[:result]
-              b2.use Create
+              b1.use Call, IsStopped do |env2, b2|
+                if env2[:result]
+                  # Start an already created instance
+                  b2.use StartInstance
+                else
+                  # Already created and running
+                  b2.use MessageAlreadyCreated
+                end
+              end
+            else
+              b1.use MessageNotCreated
+              b1.use Create
+              b1.use StartInstance
             end
           end
-          b.use StartInstance
         end
       end
 
@@ -31,7 +40,11 @@ module VagrantPlugins
       def self.action_halt
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
-          b.use Builtin::Call, Builtin::IsState, :running do |env, b2|
+          b.use Builtin::Call, IsCreated do |env, b2|
+            if !env[:result]
+               b2.use MessageNotCreated
+               next
+            end
             b2.use StopInstance
           end
         end
@@ -43,13 +56,15 @@ module VagrantPlugins
           b.use Builtin::Call, Builtin::DestroyConfirm do |env, b2|
             if env[:result]
               b2.use Builtin::ConfigValidate
-              b2.use Builtin::Call, Builtin::IsCreated do |env2, b3|
+              b2.use Builtin::Call, IsCreated do |env2, b3|
                 if !env2[:result]
                   b3.use MessageNotCreated
                   next
                 end
 
                 b3.use Builtin::ProvisionerCleanup, :before if defined?(Builtin::ProvisionerCleanup)
+                b3.use action_halt
+                b3.use Destroy
               end
             else
               b2.use MessageWillNotDestroy
@@ -63,7 +78,7 @@ module VagrantPlugins
       def self.action_ssh
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
-          b.use Builtin::Call, Builtin::IsCreated do |env, b2|
+          b.use Builtin::Call, IsCreated do |env, b2|
             if !env[:result]
               b2.use MessageNotCreated
               next
@@ -77,7 +92,7 @@ module VagrantPlugins
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
-          b.use Builtin::Call, Builtin::IsCreated do |env, b2|
+          b.use Builtin::Call, IsCreated do |env, b2|
             if !env[:result]
               b2.use MessageNotCreated
               next
@@ -101,8 +116,11 @@ module VagrantPlugins
       # The autoload farm
       action_root = Pathname.new(File.expand_path("../action", __FILE__))
       autoload :Create, action_root.join("create")
+      autoload :IsCreated, action_root.join("is_created")
+      autoload :IsStopped, action_root.join("is_stopped")
       autoload :StartInstance, action_root.join("start_instance")
       autoload :StopInstance, action_root.join("stop_instance")
+      autoload :Destroy, action_root.join("destroy")
       autoload :HandleBoxMetadata, action_root.join("handle_box_metadata")
       autoload :MessageAlreadyCreated, action_root.join("message_already_created")
       autoload :MessageNotCreated, action_root.join("message_not_created")
