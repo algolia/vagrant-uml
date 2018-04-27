@@ -20,7 +20,7 @@ module VagrantPlugins
               :rootfs => env[:uml_rootfs],
               :mem => 256,
               :cpu => 1,
-              :eth0 => "daemon,,unix,/tmp/uml_switch.ctl",
+              :eth0 => "daemon,#{env[:machine].provider_config.mac},unix,/tmp/uml_switch.ctl",
               :con0 => "null,fd:1",
               :con1 => "null,fd:2",
               :con => "pts",
