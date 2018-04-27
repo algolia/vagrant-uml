@@ -28,7 +28,6 @@ module VagrantPlugins
                 end
               end
             else
-              b1.use MessageNotCreated
               b1.use Create
               b1.use StartInstance
             end
