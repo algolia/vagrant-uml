@@ -18,18 +18,24 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :name
 
+      # The mac address of the instance. This must be unique for all instances.
+      #
+      # @return [String]
+      attr_accessor :mac
 
 
       def initialize
         @PID             = UNSET_VALUE
         @create_args     = UNSET_VALUE
         @name            = UNSET_VALUE
+        @mac             = UNSET_VALUE
       end
 
 
       def finalize!
         @create_args = [] if @create_args == UNSET_VALUE
         @name        = nil if @name == UNSET_VALUE
+        @mac         = nil if @name == UNSET_VALUE
         @PID         = -1 if @name == UNSET_VALUE
       end
 
