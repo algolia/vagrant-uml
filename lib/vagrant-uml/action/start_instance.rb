@@ -20,11 +20,11 @@ module VagrantPlugins
               :rootfs => env[:uml_rootfs],
               :mem => 256,
               :cpu => 1,
-              :eth0 => "tuntap,tap1,,192.168.1.254",
-              :con0 => "con0=null,fd:stderr.txt",
-              :con1 => "con1=null,fd:stdout.txt",
-              :con => "con=pts",
-              :ssl => "ssl=null"
+              :eth0 => "daemon,,unix,/tmp/uml_switch.ctl",
+              :con0 => "null,fd:stderr.txt",
+              :con1 => "null,fd:stdout.txt",
+              :con => "pts",
+              :ssl => "null"
             )
           rescue UML::Errors::ExecuteError => e
             # Execution error, we were not able to start the UML instance

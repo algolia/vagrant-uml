@@ -37,8 +37,8 @@ module VagrantPlugins
         options = command.last.is_a?(Hash) ? command.pop : {}
         command = command.dup
 
-        res = Vagrant::Util::Subprocess.execute("tunctl", "-t", options[:machine_id], retryable: true)
-        res2 = Vagrant::Util::Subprocess.execute("ifconfig", options[:machine_id], "192.168.1.254" , "up", retryable: true)
+        #res = Vagrant::Util::Subprocess.execute("tunctl", "-t", options[:machine_id], retryable: true)
+        #res2 = Vagrant::Util::Subprocess.execute("ifconfig", options[:machine_id], "192.168.1.254" , "up", retryable: true)
 
         # umdir should probably be set to data_dir to prevent zombies sockets 
         process = Process.new(
@@ -46,10 +46,11 @@ module VagrantPlugins
           "ubda=cow,#{options[:rootfs]}" ,
           "umid=#{options[:machine_id]}" ,
           "mem=#{options[:mem]}m" ,
-          "eth0=tuntap,#{options[:machine_id]},,192.168.1.254" ,
-          "con0=null,fd:1" ,
-          "con1=null,fd:2" ,
-          "con=pts ssl=null" ,
+          "eth0=#{options[:eth0]}" ,
+          "con0=#{options[:con0]}",
+          "con1=#{options[:con1]}",
+          "con=#{options[:con]}",
+          "ssl=#{options[:ssl]}",
           :detach => true ,
           :workdir => options[:data_dir]
         )
