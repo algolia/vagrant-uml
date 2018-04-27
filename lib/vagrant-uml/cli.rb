@@ -21,7 +21,7 @@ module VagrantPlugins
               @logger.debug( "Cli.state: instance is running")
               return :running
             else
-              return :not_running
+              return :poweroff
             end
           rescue
             ## We should try to figure out if the machine is stopped, not_created, ...
