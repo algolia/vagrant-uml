@@ -9,6 +9,7 @@ module VagrantPlugins
         def call(env)
           env[:ui].info I18n.t("vagrant.actions.vm.destroy.destroying")
           cow_file = env[:machine].data_dir.join('cow')
+          exec_file = env[:machine].data_dir.join('run')
           if cow_file.file?
             cow_file.delete
           end
