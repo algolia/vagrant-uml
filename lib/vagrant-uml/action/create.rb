@@ -6,8 +6,19 @@ module VagrantPlugins
           @app = app
         end
 
+
+        def generate_mac
+          format = '%02x'
+          delimiter = ':'
+
+          mac_octets = (1..3).collect { rand(256) }
+          mac_octets[0] |= 0x02
+          (1..3).each { mac_octets << rand(256) }
+          mac = mac_octets.collect { |i| format % [i] }.join(delimiter)
+        end
+
         def call(env)
-          config = env[:machine].provider_config
+          env[:machine].provider_config.mac = generate_mac
           env[:ui].info (I18n.t("vagrant_uml.copying"))
           FileUtils.cp_r(env[:machine].box.directory.to_s + "/metadata.json", env[:machine].data_dir)
           FileUtils.ln_s(env[:uml_kernel_bin], env[:machine].data_dir.to_s + "/run")
