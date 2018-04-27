@@ -28,6 +28,7 @@ module VagrantPlugins
                 end
               end
             else
+              # Instance not created
               b1.use Create
               b1.use StartInstance
             end
