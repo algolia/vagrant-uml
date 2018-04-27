@@ -18,7 +18,7 @@ module VagrantPlugins
           b.use HandleBoxMetadata
           b.use Builtin::Call, IsCreated do |env, b1|
             if env[:result]
-              b1.use Call, IsStopped do |env2, b2|
+              b1.use Builtin::Call, IsStopped do |env2, b2|
                 if env2[:result]
                   # Start an already created instance
                   b2.use StartInstance
