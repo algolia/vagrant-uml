@@ -21,8 +21,8 @@ module VagrantPlugins
               :mem => 256,
               :cpu => 1,
               :eth0 => "daemon,,unix,/tmp/uml_switch.ctl",
-              :con0 => "null,fd:stderr.txt",
-              :con1 => "null,fd:stdout.txt",
+              :con0 => "null,fd:1",
+              :con1 => "null,fd:2",
               :con => "pts",
               :ssl => "null"
             )
