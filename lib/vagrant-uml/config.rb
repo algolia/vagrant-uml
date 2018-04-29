@@ -35,10 +35,8 @@ module VagrantPlugins
       def finalize!
         @create_args = [] if @create_args == UNSET_VALUE
         @name        = nil if @name == UNSET_VALUE
-        @mac         = nil if @name == UNSET_VALUE
-        @PID         = -1 if @name == UNSET_VALUE
-        mac_file = env[:machine].data_dir.join("action_create")
-        @mac = mac_file.read.chomp if mac_file.file?
+        @mac         = nil if @mac == UNSET_VALUE
+        @PID         = -1 if @PID == UNSET_VALUE
       end
 
       def validate(machine)
