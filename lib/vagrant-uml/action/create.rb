@@ -11,9 +11,11 @@ module VagrantPlugins
           format = '%02x'
           delimiter = ':'
 
-          mac_octets = (1..3).collect { rand(256) }
+          mac_octets = (1..6).collect { rand(256) }
+          # Set the locally administered bit
           mac_octets[0] |= 0x02
-          (1..3).each { mac_octets << rand(256) }
+          # Unsure this is not a multicast mac address by seting the LSB to 0
+          mac_octets[0] -=1 if mac_octets[0].odd?
           mac = mac_octets.collect { |i| format % [i] }.join(delimiter)
           mac.to_s
         end
