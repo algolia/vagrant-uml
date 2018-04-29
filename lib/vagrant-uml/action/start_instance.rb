@@ -12,7 +12,7 @@ module VagrantPlugins
 
         def call(env)
           env[:ui].info (I18n.t("vagrant_uml.starting"))
-
+          env[:machine].provider.capability(:nic_mac_address)
           begin
             @cli.run_uml( env[:machine].data_dir.to_s + "/run",
               :data_dir => env[:machine].data_dir.to_s,
