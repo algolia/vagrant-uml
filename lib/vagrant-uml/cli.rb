@@ -65,7 +65,7 @@ module VagrantPlugins
          if $1.to_s != options[:name]
            raise "TUN/TAP interface name mismatch !"
          end
-         Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:ip], "up", retryable: true)
+         Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip], "up", retryable: true)
          # Run DHCP server (see patched version of https://github.com/aktowns/ikxDHCP.git)
       end
         
