@@ -60,8 +60,9 @@ module VagrantPlugins
         process.run 
       end
 
-      def create_standalone_net(*options)
-         Vagrant::Util::Subprocess.execute(@tunctl_path, "-t", options[:name], retryable: true) =~ /Set '(.+?)' persistent and owned by uid (.+?)/
+      def create_standalone_net(options)
+         res = Vagrant::Util::Subprocess.execute(@tunctl_path, "-t", options[:name], retryable: true)
+         res.stdout =~ /Set '(.+?)' persistent and owned by uid (.+?)/
          if $1.to_s != options[:name]
            raise "TUN/TAP interface name mismatch !"
          end
