@@ -8,6 +8,9 @@ module VagrantPlugins
 
       def initialize(name = nil)
         @name = name
+        @tunctl_path = Vagrant::Util::Which.which("tunctl")
+        @mconsole_path = Vagrant::Util::Which.which("uml_mconsole")
+        @switch_path = Vagrant::Util::Which.which("uml_switch")
         @logger = Log4r::Logger.new("vagrant::uml::cli")
       end
 
@@ -16,7 +19,7 @@ module VagrantPlugins
           return :unknown
         else
           begin
-            res = Vagrant::Util::Subprocess.execute("uml_mconsole", id, "version", retryable: true)
+            res = Vagrant::Util::Subprocess.execute(@mconsole_path, id, "version", retryable: true)
             if res.stdout =~ /^OK/
               @logger.debug( "Cli.state: instance is running")
               return :running
@@ -57,7 +60,15 @@ module VagrantPlugins
         process.run 
       end
 
-
+      def create_standalone_net(*options)
+         Vagrant::Util::Subprocess.execute(@tunctl_path, "-t", options[:name], retryable: true) =~ /Set '(.+?)' persistent and owned by uid (.+?)/
+         if $1.to_s != options[:name]
+           raise "TUN/TAP interface name mismatch !"
+         end
+         Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:ip], "up", retryable: true)
+         # Run DHCP server (see patched version of https://github.com/aktowns/ikxDHCP.git)
+      end
+        
     end
   end
 end

@@ -15,6 +15,15 @@ module VagrantPlugins
           @logger.info (I18n.t("vagrant_uml.errors.wrong_os"))
           raise UML::Errors::LinuxRequired
         end
+        if !Vagrant::Util::Which.which("tunctl")
+          raise Vagrant::Errors:CommandUnavailable, "tunctl"
+        end
+        if !Vagrant::Util::Which.which("uml_switch")
+          raise Vagrant::Errors:CommandUnavailable, "uml_switch"
+        end
+        if !Vagrant::Util::Which.which("uml_mconsole")
+          raise Vagrant::Errors:CommandUnavailable, "uml_mconsole"
+        end
 
         @machine = machine
       end
