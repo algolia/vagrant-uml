@@ -31,7 +31,7 @@ module VagrantPlugins
           FileUtils.cp_r(env[:machine].box.directory.to_s + "/metadata.json", env[:machine].data_dir)
           FileUtils.ln_s(env[:uml_kernel_bin], env[:machine].data_dir.to_s + "/run")
           # Generate a random id for this machine
-          env[:machine].id=([*('a'..'z'),*('0'..'9')].shuffle[0,16].join.to_s)
+          env[:machine].id=([*('a'..'z'),*('0'..'9')].shuffle[0,15].join.to_s)
           @app.call(env)
         end
       end
