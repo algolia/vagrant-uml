@@ -68,6 +68,15 @@ module VagrantPlugins
          end
          Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip], "up", retryable: true)
          # Run DHCP server (see patched version of https://github.com/aktowns/ikxDHCP.git)
+         # pid = Process.fork
+         # if pid.nil? then
+         #  # In child
+         #  RUN THE DHCPD function
+         # else
+         #  # In parent
+         #  Process.detach(pid)
+         # end
+         # Set iptables MASQUERADE according to the ip address provided by the DHCP server to the guest
       end
         
     end
