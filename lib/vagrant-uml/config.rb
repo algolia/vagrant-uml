@@ -2,11 +2,6 @@
 module VagrantPlugins
   module UML
     class Config < Vagrant.plugin("2", :config)
-      # An integer to store the pid of the UML kernel.
-      #
-      # @return [Integer]
-      attr_reader :PID
-
       # Additional arguments to pass to the UML kernel when creating
       # the instance for the first time. This is an array of args.
       #
@@ -25,7 +20,6 @@ module VagrantPlugins
 
 
       def initialize
-        @PID             = UNSET_VALUE
         @create_args     = UNSET_VALUE
         @name            = UNSET_VALUE
         @mac             = UNSET_VALUE
@@ -36,7 +30,6 @@ module VagrantPlugins
         @create_args = [] if @create_args == UNSET_VALUE
         @name        = nil if @name == UNSET_VALUE
         @mac         = nil if @mac == UNSET_VALUE
-        @PID         = -1 if @PID == UNSET_VALUE
       end
 
       def validate(machine)
