@@ -30,7 +30,7 @@ module VagrantPlugins
             ## We should try to figure out if the machine is stopped, not_created, ...
             #   test if the cow file exists ?
             @logger.debug( "Cli.state: RESCUE instance state unknown error during call to uml_mconsole")
-            return :unknow
+            return :unknown
           end
         end
       end
@@ -58,6 +58,9 @@ module VagrantPlugins
           :workdir => options[:data_dir]
         )
         process.run 
+      end
+
+      def create_switched_net(options)
       end
 
       def create_standalone_net(options)
