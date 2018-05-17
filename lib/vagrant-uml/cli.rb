@@ -52,6 +52,7 @@ module VagrantPlugins
           "eth0=#{options[:eth0]}" ,
           "con0=#{options[:con0]}",
           "con1=#{options[:con1]}",
+          "ncpus=#{options[:ncpus]}",
           "con=#{options[:con]}",
           "ssl=#{options[:ssl]}",
           :detach => true ,
@@ -69,7 +70,9 @@ module VagrantPlugins
          if $1.to_s != options[:name]
            raise "TUN/TAP interface name mismatch !"
          end
-         Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip], "up", retryable: true)
+         Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip]+"/24", "up", retryable: true)
+         Vagrant::Util::Subprocess.execute("sysctl", "-w", "net.ipv4.ip_forward=1", retryable: true)
+         Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", "192.168.0.2", "-o", "enp0s3", "-j", "MASQUERADE" ,retryable: true)
          # Run DHCP server (see patched version of https://github.com/aktowns/ikxDHCP.git)
          # pid = Process.fork
          # if pid.nil? then
