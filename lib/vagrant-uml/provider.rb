@@ -24,6 +24,12 @@ module VagrantPlugins
         if !Vagrant::Util::Which.which("uml_mconsole")
           raise Vagrant::Errors:CommandUnavailable, "uml_mconsole"
         end
+        if !Vagrant::Util::Which.which("mcopy")
+          raise Vagrant::Errors:CommandUnavailable, "mcopy"
+        end
+        if !Vagrant::Util::Which.which("mkfs.vfat")
+          raise Vagrant::Errors:CommandUnavailable, "mkfs.vfat"
+        end
 
         @machine = machine
       end
