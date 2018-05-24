@@ -4,6 +4,7 @@ module VagrantPlugins
       class Create
         def initialize(app, env)
           @app = app
+          @cli = CLI.new(env[:machine].name)
         end
 
 
@@ -32,6 +33,7 @@ module VagrantPlugins
           FileUtils.ln_s(env[:uml_kernel_bin], env[:machine].data_dir.to_s + "/run")
           # Generate a random id for this machine
           env[:machine].id=([*('a'..'z'),*('0'..'9')].shuffle[0,15].join.to_s)
+          @cli.create_cidata(:root_path => env[:machine].env.root_path.to_s , :name => env[:machine].name , :mac => env[:machine].provider_config.mac)
           @app.call(env)
         end
       end
