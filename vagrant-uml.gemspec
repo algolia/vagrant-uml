@@ -19,9 +19,6 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(spec|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "packetfu"
-  spec.add_dependency "bindata"
-
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
 end
