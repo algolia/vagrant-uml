@@ -139,19 +139,20 @@ EOS
          if $1.to_s != options[:name]
            raise "TUN/TAP interface name mismatch !"
          end
+         res = Vagrant::Util::Subprocess.execute("ip", "-4", "route", "list", "match", "0.0.0.0", retryable: true)
+         res.stdout =~ /default via ([0-9.]+) dev (.+?)/
+         default_interface = $1.to_s
          Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip]+"/24", "up", retryable: true)
          Vagrant::Util::Subprocess.execute("sysctl", "-w", "net.ipv4.ip_forward=1", retryable: true)
-         Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", "192.168.0.2", "-o", "enp0s3", "-j", "MASQUERADE" ,retryable: true)
-         # Run DHCP server (see patched version of https://github.com/aktowns/ikxDHCP.git)
-         # pid = Process.fork
-         # if pid.nil? then
-         #  # In child
-         #  RUN THE DHCPD function
-         # else
-         #  # In parent
-         #  Process.detach(pid)
-         # end
-         # Set iptables MASQUERADE according to the ip address provided by the DHCP server to the guest
+         Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", "192.168.0.2", "-o", default_interface, "-m", "comment", "--comment, "\"#{options[:name]}\"", "-j", "MASQUERADE" ,retryable: true)
+      end
+
+      def destroy_standalone_net(id)
+        res = Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-L", "POSTROUTING", "--line-numbers", "-n", retryable: true)
+        res.stdout =~ /([0-9]+)\s+MASQUERADE\s+all\s+--\s+[0-9.]+\s+0\.0\.0\.0\/0\s+\/\*\s+#{id}\s+\*\//
+        rule_number = $1.to_s
+        Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-D", "POSTROUTING", rule_number, retryable: true) if rule_number && rule_number.length > 0
+        Vagrant::Util::Subprocess.execute("ip", "link", "delete", id, retryable: true)
       end
         
     end
