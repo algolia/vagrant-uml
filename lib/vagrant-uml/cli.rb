@@ -141,10 +141,10 @@ EOS
          end
          res = Vagrant::Util::Subprocess.execute("ip", "-4", "route", "list", "match", "0.0.0.0", retryable: true)
          res.stdout =~ /default via ([0-9.]+) dev (.+?)/
-         default_interface = $1.to_s
+         default_interface = $2.to_s
          Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip]+"/24", "up", retryable: true)
          Vagrant::Util::Subprocess.execute("sysctl", "-w", "net.ipv4.ip_forward=1", retryable: true)
-         Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", "192.168.0.2", "-o", default_interface, "-m", "comment", "--comment, "\"#{options[:name]}\"", "-j", "MASQUERADE" ,retryable: true)
+         Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", "192.168.0.2", "-o", default_interface, "-m", "comment", "--comment", options[:name], "-j", "MASQUERADE" ,retryable: true)
       end
 
       def destroy_standalone_net(id)
