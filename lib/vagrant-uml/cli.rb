@@ -103,7 +103,7 @@ EOS
           Vagrant::Util::Subprocess.execute(mkfs,"-n", "cidata", "#{dir}/cloud-init.vfat", retryable: true)
           mtools_env = []
           mtools_env << ["MTOOLS_SKIP_CHECK", "1"]
-          Vagrant::Util::Subprocess.execute(mcopy,"-oi", "#{dir}/cloud-init.vfat", "#{dir}/meta-data", "#{dir}/user-data", "#{dir}/network-config","::", retryable: true, env => mtools_env)
+          Vagrant::Util::Subprocess.execute(mcopy,"-oi", "#{dir}/cloud-init.vfat", "#{dir}/meta-data", "#{dir}/user-data", "#{dir}/network-config","::", retryable: true, :env => mtools_env)
           FileUtils.mv("#{dir}/cloud-init.vfat", "#{options[:data_dir]}/cloud-init.vfat")
         }
       end
