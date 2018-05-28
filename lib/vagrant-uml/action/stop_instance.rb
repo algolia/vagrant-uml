@@ -6,6 +6,7 @@ module VagrantPlugins
       class StopInstance
         def initialize(app, env)
           @app    = app
+          @cli = CLI.new(env[:machine].name)
         end
 
         def call(env)
