@@ -46,7 +46,7 @@ module VagrantPlugins
         mkfs = Vagrant::Util::Which.which("mkfs.vfat")
         mcopy = Vagrant::Util::Which.which("mcopy")
 
-        guest_ip = IPAddr.new("#{options[:host_ip]}/30").succ.to_s
+        guest_ip = IPAddr.new("#{options[:host_ip]}").succ.to_s
 
 # env[:machine].config.vm.hostname
 
@@ -139,17 +139,18 @@ EOS
       end
 
       def create_standalone_net(options)
-         res = Vagrant::Util::Subprocess.execute(@tunctl_path, "-t", options[:name], retryable: true)
-         res.stdout =~ /Set '(.+?)' persistent and owned by uid (.+?)/
-         if $1.to_s != options[:name]
-           raise "TUN/TAP interface name mismatch !"
-         end
-         res = Vagrant::Util::Subprocess.execute("ip", "-4", "route", "list", "match", "0.0.0.0", retryable: true)
-         res.stdout =~ /default via ([0-9.]+) dev (\S+)(\s+\S+)*/
-         default_interface = $2.to_s
-         Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip]+"/30", "up", retryable: true)
-         Vagrant::Util::Subprocess.execute("sysctl", "-w", "net.ipv4.ip_forward=1", retryable: true)
-         Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", "192.168.0.2", "-o", default_interface, "-m", "comment", "--comment", options[:name], "-j", "MASQUERADE" ,retryable: true)
+        guest_ip = IPAddr.new("#{options[:host_ip]}").succ.to_s
+        res = Vagrant::Util::Subprocess.execute(@tunctl_path, "-t", options[:name], retryable: true)
+        res.stdout =~ /Set '(.+?)' persistent and owned by uid (.+?)/
+        if $1.to_s != options[:name]
+          raise "TUN/TAP interface name mismatch !"
+        end
+        res = Vagrant::Util::Subprocess.execute("ip", "-4", "route", "list", "match", "0.0.0.0", retryable: true)
+        res.stdout =~ /default via ([0-9.]+) dev (\S+)(\s+\S+)*/
+        default_interface = $2.to_s
+        Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip]+"/30", "up", retryable: true)
+        Vagrant::Util::Subprocess.execute("sysctl", "-w", "net.ipv4.ip_forward=1", retryable: true)
+        Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", guest_ip, "-o", default_interface, "-m", "comment", "--comment", options[:name], "-j", "MASQUERADE" ,retryable: true)
       end
 
       def destroy_standalone_net(id)
