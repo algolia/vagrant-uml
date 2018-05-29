@@ -45,7 +45,8 @@ module VagrantPlugins
 
       def ssh_info
         return nil if state.id != :running
-        @machine.action("read_ssh_info", lock: false)
+        env = @machine.action("read_ssh_info", lock: false)
+        env[:machine_ssh_info]
       end
 
       def state
