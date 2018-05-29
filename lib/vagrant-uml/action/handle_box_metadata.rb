@@ -3,7 +3,7 @@ module VagrantPlugins
   module UML
     module Action
       class HandleBoxMetadata
-        SUPPORTED_VERSIONS  = ['0.0.1']
+        SUPPORTED_VERSIONS  = ['0.0.1','0.0.2']
 
         def initialize(app, env)
           @app    = app
