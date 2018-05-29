@@ -38,24 +38,24 @@ module VagrantPlugins
           # Generate a random id for this machine
           env[:machine].id=([*('a'..'z'),*('0'..'9')].shuffle[0,15].join.to_s)
 
-          # Check existing uml instance for ip address
-          host_ip = ""
-          uml_inst_cpt=0
+          # Create an array to store all uml existing ip address to ease lookup
+          existing_ips = []
           env[:machine].env.machine_index.each do |entry|
             if entry.provider == "uml" && entry.id != env[:machine].index_uuid
-              uml_inst_cpt=1
-              @logger.info("Existing UML ip: #{entry.extra_data["host_ip"]}")
-              (1..253).step(4).to_a.each do |last_oct|
-                if "10.0.113.#{last_oct}" != entry.extra_data["host_ip"]
-                  # Let's use the first free ip address in the range
-                  host_ip = "10.0.113.#{last_oct}"
-                  break
-                end
-              end
+              existing_ips << entry.extra_data["host_ip"]
             end
           end
-          raise "Network range exhaustion" if host_ip == "" && uml_inst_cpt == 1
-          host_ip="10.0.113.1" if uml_inst_cpt==0
+          # Check existing uml instance for ip address
+          smallest=0
+          (1..253).step(4).to_a.each do |last_oct|
+            if ! existing_ips.include? "10.0.113.#{last_oct}"
+              smallest=last_oct
+              break
+            end
+          end
+
+          raise "Network range (10.0.113.0) exhaustion" if smallest==0
+          host_ip="10.0.113.#{smallest}"
 
           # Create a cloud-init seed image
           @cli.create_cidata(:root_path => env[:machine].env.root_path.to_s, :machine_id => env[:machine].id, :name => env[:machine].name, :mac => env[:machine].provider_config.mac, :data_dir => data_dir.to_s, :host_ip => host_ip)
