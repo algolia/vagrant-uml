@@ -39,20 +39,32 @@ module VagrantPlugins
           env[:machine].id=([*('a'..'z'),*('0'..'9')].shuffle[0,15].join.to_s)
 
           # Check existing uml instance for ip address
-          env[:machine].env.machine_index.each |entry| do
+          host_ip = ""
+          uml_inst_cpt=0
+          env[:machine].env.machine_index.each do |entry|
             if entry.provider == "uml" && entry.id != env[:machine].index_uuid
+              uml_inst_cpt=1
               @logger.info("Existing UML ip: #{entry.extra_data["host_ip"]}")
+              (1..253).step(4).to_a.each do |last_oct|
+                if "10.0.113.#{last_oct}" != entry.extra_data["host_ip"]
+                  # Let's use the first free ip address in the range
+                  host_ip = "10.0.113.#{last_oct}"
+                  break
+                end
+              end
             end
           end
+          raise "Network range exhaustion" if host_ip == "" && uml_inst_cpt == 1
+          host_ip="10.0.113.1" if uml_inst_cpt==0
 
           # Create a cloud-init seed image
-          @cli.create_cidata(:root_path => env[:machine].env.root_path.to_s, :machine_id => env[:machine].id, :name => env[:machine].name, :mac => env[:machine].provider_config.mac, :data_dir => data_dir.to_s)
+          @cli.create_cidata(:root_path => env[:machine].env.root_path.to_s, :machine_id => env[:machine].id, :name => env[:machine].name, :mac => env[:machine].provider_config.mac, :data_dir => data_dir.to_s, :host_ip => host_ip)
 
           # Store the host ip associated with this instance in the global machine index
           entry = env[:machine].env.machine_index.get(env[:machine].index_uuid)
-          entry.extra_data["host_ip"] = "192.168.0.2"
-          entry = env[:machine].env.machine_index.set(entry)
-          entry = env[:machine].env.machine_index.release(entry)
+          entry.extra_data["host_ip"] = host_ip
+          env[:machine].env.machine_index.set(entry)
+          env[:machine].env.machine_index.release(entry)
 
           @app.call(env)
         end
