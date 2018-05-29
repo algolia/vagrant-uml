@@ -1,4 +1,5 @@
 require "log4r"
+require "ipaddr"
 
 module VagrantPlugins
   module UML
@@ -8,6 +9,7 @@ module VagrantPlugins
       class ReadSSHInfo
         def initialize(app, env)
           @app    = app
+          @env    = env
           @logger = Log4r::Logger.new("vagrant_uml::action::read_ssh_info")
         end
 
@@ -20,7 +22,11 @@ module VagrantPlugins
         def read_ssh_info(machine)
           return nil if machine.id.nil?
           # Find the ip address
-          return { :host => host_value, :port => 22 }
+          entry = @env[:machine].env.machine_index.get(env[:machine].index_uuid)
+          host_ip = entry.extra_data["host_ip"]
+          @env[:machine].env.machine_index.release(entry)
+          guest_ip = IPAddr.new(host_ip).succ.to_s
+          return { :host => guest_ip, :port => 22 }
         end
 
       end

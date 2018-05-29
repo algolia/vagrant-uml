@@ -45,8 +45,7 @@ module VagrantPlugins
 
       def ssh_info
         return nil if state.id != :running
-        return { :host => "192.168.0.2", :port => "22" }
-        nil
+        @machine.action("read_ssh_info", lock: false)
       end
 
       def state
