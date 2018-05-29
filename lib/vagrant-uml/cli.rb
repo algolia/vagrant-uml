@@ -2,6 +2,7 @@ require "vagrant/util/subprocess"
 require "vagrant-uml/process"
 require "tmpdir"
 require "fileutils"
+require "ipaddr"
 
 module VagrantPlugins
   module UML
@@ -45,6 +46,8 @@ module VagrantPlugins
         mkfs = Vagrant::Util::Which.which("mkfs.vfat")
         mcopy = Vagrant::Util::Which.which("mcopy")
 
+        guest_ip = IPAddr.new("#{options[:host_ip]}/30").succ.to_s
+
 # env[:machine].config.vm.hostname
 
         ud_template = <<EOS
@@ -81,9 +84,9 @@ config:
     mac_address: "#{options[:mac]}"
     subnets:
       - type: static
-        address: 192.168.0.2
+        address: #{guest_ip}
         netmask: 255.255.255.252
-        gateway: 192.168.0.1
+        gateway: #{options[:host_ip]}
   - type: nameserver
     address:
       - 8.8.8.8

@@ -13,7 +13,12 @@ module VagrantPlugins
         def call(env)
           env[:ui].info (I18n.t("vagrant_uml.starting"))
           env[:machine].provider.capability(:nic_mac_address)
-          @cli.create_standalone_net(:name => env[:machine].id,:host_ip => "192.168.0.1")
+
+          entry = env[:machine].env.machine_index.get(env[:machine].index_uuid)
+          host_ip = entry.extra_data["host_ip"]
+          env[:machine].env.machine_index.release(entry)
+
+          @cli.create_standalone_net(:name => env[:machine].id,:host_ip => host_ip)
           begin
             @cli.run_uml( env[:machine].data_dir.to_s + "/run",
               :data_dir => env[:machine].data_dir.to_s,
@@ -22,7 +27,7 @@ module VagrantPlugins
               :mem => 1024,
               :ncpus => 2,
 #              :eth0 => "daemon,#{env[:machine].provider_config.mac},unix,/tmp/uml_switch.ctl",
-              :eth0 => "tuntap,#{env[:machine].id},#{env[:machine].provider_config.mac},192.168.0.1",
+              :eth0 => "tuntap,#{env[:machine].id},#{env[:machine].provider_config.mac},#{host_ip}",
               :con0 => "null,fd:1",
               :con1 => "null,fd:2",
               :con => "pts",
