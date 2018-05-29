@@ -23,7 +23,7 @@ module VagrantPlugins
           begin
             res = Vagrant::Util::Subprocess.execute(@mconsole_path, id, "version", retryable: true)
             if res.stdout =~ /^OK/
-              @logger.debug( "Cli.state: instance is running")
+              @logger.debug( "instance is running")
               return :running
             else
               return :poweroff
@@ -31,7 +31,7 @@ module VagrantPlugins
           rescue
             ## We should try to figure out if the machine is stopped, not_created, ...
             #   test if the cow file exists ?
-            @logger.debug( "Cli.state: RESCUE instance state unknown error during call to uml_mconsole")
+            @logger.debug( "instance state unknown error during call to uml_mconsole")
             return :unknown
           end
         end
@@ -40,7 +40,7 @@ module VagrantPlugins
       def create_cidata(*command)
         options = command.last.is_a?(Hash) ? command.pop : {}
 
-        @logger.debug( "Cli.cidata: root_path = #{options[:root_path]}")
+        @logger.debug( "root_path = #{options[:root_path]}")
         # We may use guestfs bindings, but ruby-guests requires a lot of dependencies ...
         mkfs = Vagrant::Util::Which.which("mkfs.vfat")
         mcopy = Vagrant::Util::Which.which("mcopy")
@@ -82,7 +82,7 @@ config:
     subnets:
       - type: static
         address: 192.168.0.2
-        netmask: 255.255.255.0
+        netmask: 255.255.255.252
         gateway: 192.168.0.1
   - type: nameserver
     address:
@@ -142,9 +142,9 @@ EOS
            raise "TUN/TAP interface name mismatch !"
          end
          res = Vagrant::Util::Subprocess.execute("ip", "-4", "route", "list", "match", "0.0.0.0", retryable: true)
-         res.stdout =~ /default via ([0-9.]+) dev (.+?)/
+         res.stdout =~ /default via ([0-9.]+) dev (\S+)(\s+\S+)*/
          default_interface = $2.to_s
-         Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip]+"/24", "up", retryable: true)
+         Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip]+"/30", "up", retryable: true)
          Vagrant::Util::Subprocess.execute("sysctl", "-w", "net.ipv4.ip_forward=1", retryable: true)
          Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", "192.168.0.2", "-o", default_interface, "-m", "comment", "--comment", options[:name], "-j", "MASQUERADE" ,retryable: true)
       end
