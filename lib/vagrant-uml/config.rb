@@ -18,11 +18,18 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :mac
 
+      # The memory size (in MB) of the instance. This must be unique for all instances.
+      #
+      # @return [Integer]
+      attr_accessor :memory
+
 
       def initialize
         @create_args     = UNSET_VALUE
         @name            = UNSET_VALUE
         @mac             = UNSET_VALUE
+        @memory          = UNSET_VALUE
+        @cpus            = UNSET_VALUE
       end
 
 
@@ -30,6 +37,8 @@ module VagrantPlugins
         @create_args = [] if @create_args == UNSET_VALUE
         @name        = nil if @name == UNSET_VALUE
         @mac         = nil if @mac == UNSET_VALUE
+        @memory      = nil if @mac == UNSET_VALUE
+        @cpus        = nil if @mac == UNSET_VALUE
       end
 
       def validate(machine)
