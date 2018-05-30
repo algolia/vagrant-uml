@@ -23,6 +23,10 @@ module VagrantPlugins
       # @return [Integer]
       attr_accessor :memory
 
+      # The number of cpu of the instance. This must be unique for all instances.
+      #
+      # @return [Integer]
+      attr_accessor :cpus
 
       def initialize
         @create_args     = UNSET_VALUE
