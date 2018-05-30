@@ -31,6 +31,7 @@ module VagrantPlugins
               # Instance not created
               b1.use Create
               b1.use StartInstance
+              b1.use WaitForCommunicator, [:starting, :running]
             end
           end
         end
@@ -44,8 +45,13 @@ module VagrantPlugins
             if !env[:result]
                b2.use MessageNotCreated
                next
+            else
+              b2.use Builtin::Call, Builtin::GracefulHalt, :poweroff, :running do |env2, b3|
+                if !env2[:result]
+                  b3.use StopInstance
+                end
+              end
             end
-            b2.use StopInstance
           end
         end
       end
