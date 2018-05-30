@@ -37,8 +37,8 @@ module VagrantPlugins
         @create_args = [] if @create_args == UNSET_VALUE
         @name        = nil if @name == UNSET_VALUE
         @mac         = nil if @mac == UNSET_VALUE
-        @memory      = nil if @mac == UNSET_VALUE
-        @cpus        = nil if @mac == UNSET_VALUE
+        @memory      = nil if @memory == UNSET_VALUE
+        @cpus        = nil if @cpus == UNSET_VALUE
       end
 
       def validate(machine)
