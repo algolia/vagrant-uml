@@ -18,13 +18,6 @@ module VagrantPlugins
           host_ip = entry.extra_data["host_ip"]
           env[:machine].env.machine_index.release(entry)
 
-
-          memory = env[:machine].provider_config.memory
-          memory ||= 1024
-          cpus = env[:machine].provider_config.cpus
-          cpus ||= 2
-        
-
           @cli.create_standalone_net(:name => env[:machine].id,:host_ip => host_ip)
           begin
             @cli.run_uml( env[:machine].data_dir.to_s + "/run",
