@@ -31,7 +31,7 @@ module VagrantPlugins
               # Instance not created
               b1.use Create
               b1.use StartInstance
-              b1.use WaitForCommunicator, [:starting, :running]
+              b1.use Builtin::WaitForCommunicator, [:starting, :running]
             end
           end
         end
