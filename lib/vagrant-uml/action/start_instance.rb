@@ -24,8 +24,8 @@ module VagrantPlugins
               :data_dir => env[:machine].data_dir.to_s,
               :machine_id => env[:machine].id,
               :rootfs => env[:uml_rootfs],
-              :mem => memory,
-              :ncpus => cpus,
+              :mem => env[:machine].provider_config.memory,
+              :ncpus => env[:machine].provider_config.cpus,
 #              :eth0 => "daemon,#{env[:machine].provider_config.mac},unix,/tmp/uml_switch.ctl",
               :eth0 => "tuntap,#{env[:machine].id},#{env[:machine].provider_config.mac},#{host_ip}",
               :con0 => "null,fd:1",
@@ -33,6 +33,7 @@ module VagrantPlugins
               :con => "pts",
               :ssl => "null"
             )
+            env[:machine_state_id] = :starting
           rescue UML::Errors::ExecuteError => e
             # Execution error, we were not able to start the UML instance
             raise UML::Errors::StartError, exitcode: e.exitcode
