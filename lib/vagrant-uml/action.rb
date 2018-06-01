@@ -12,9 +12,15 @@ module VagrantPlugins
       # container, configuring metadata, and booting.
       def self.action_up
         Builder.new.tap do |b|
+
+          b.use Builtin::Call, IsCreated do |env, b1|
+            if !env[:result]
+              b.use Builtin::HandleBox
+              b.use HandleBoxMetadata
+            end
+          end
+
           b.use Builtin::ConfigValidate
-          b.use Builtin::HandleBox
-          b.use HandleBoxMetadata
           b.use Builtin::Call, IsCreated do |env, b1|
             if env[:result]
               b1.use Builtin::Call, IsStopped do |env2, b2|
