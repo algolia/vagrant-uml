@@ -16,19 +16,19 @@ module VagrantPlugins
           raise UML::Errors::LinuxRequired
         end
         if !Vagrant::Util::Which.which("tunctl")
-          raise Vagrant::Errors:CommandUnavailable, "tunctl"
+          raise Vagrant::Errors::CommandUnavailable, file: "tunctl"
         end
         if !Vagrant::Util::Which.which("uml_switch")
-          raise Vagrant::Errors:CommandUnavailable, "uml_switch"
+          raise Vagrant::Errors::CommandUnavailable, file: "uml_switch"
         end
         if !Vagrant::Util::Which.which("uml_mconsole")
-          raise Vagrant::Errors:CommandUnavailable, "uml_mconsole"
+          raise Vagrant::Errors::CommandUnavailable, file: "uml_mconsole"
         end
         if !Vagrant::Util::Which.which("mcopy")
-          raise Vagrant::Errors:CommandUnavailable, "mcopy"
+          raise Vagrant::Errors::CommandUnavailable, file: "mcopy"
         end
         if !Vagrant::Util::Which.which("mkfs.vfat")
-          raise Vagrant::Errors:CommandUnavailable, "mkfs.vfat"
+          raise Vagrant::Errors::CommandUnavailable, file: "mkfs.vfat"
         end
 
         @machine = machine
