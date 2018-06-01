@@ -17,6 +17,21 @@ module VagrantPlugins
         @logger = Log4r::Logger.new("vagrant::uml::cli")
       end
 
+      def wait_for_running(id)
+        begin
+          Timeout.timeout(5) do
+            while true
+              res = Vagrant::Util::Subprocess.execute(@mconsole_path, id, "version", retryable: true)
+              return true if res.stdout =~ /^OK/
+              sleep 0.5
+            end
+          end
+        rescue Timeout::Error
+          # We timeout, there ios probably an issue in starting this instance ...
+        end
+      end
+
+
       def state(id)
         if !@name
           return :unknown

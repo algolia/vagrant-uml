@@ -34,6 +34,7 @@ module VagrantPlugins
               :ssl => "null"
             )
             env[:machine_state_id] = :starting
+            @cli.wait_for_running(env[:machine].id)
           rescue UML::Errors::ExecuteError => e
             # Execution error, we were not able to start the UML instance
             raise UML::Errors::StartError, exitcode: e.exitcode
