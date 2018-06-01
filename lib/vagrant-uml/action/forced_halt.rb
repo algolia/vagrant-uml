@@ -2,20 +2,18 @@
 module VagrantPlugins
   module UML
     module Action
-      # This stops the running instance.
-      class StopInstance
+      # This stops the running instance using mconsole halt (ie kill the instance).
+      class ForcedHalt
         def initialize(app, env)
           @app    = app
           @cli = CLI.new(env[:machine].name)
         end
 
         def call(env)
-          if env[:machine].state.id == :stopped || env[:machine].state.id == :not_running
+          if env[:machine].state.id == :stopped || env[:machine].state.id == :not_running || env[:machine].state.id == :poweroff
             env[:ui].info (I18n.t("vagrant_uml.already_status", :status => env[:machine].state.id))
           else
             env[:ui].info (I18n.t("vagrant_uml.stopping"))
-            @cli.destroy_standalone_net(env[:machine].id)
-            # We should kill the instance either with uml_mconsole, sending shutdown to ssh , by killing the pid ?
             res = Vagrant::Util::Subprocess.execute("uml_mconsole", env[:machine].id, "halt", retryable: true)
           end
 

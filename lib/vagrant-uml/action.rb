@@ -51,6 +51,7 @@ module VagrantPlugins
                 if !env2[:result]
                   b3.use StopInstance
                 end
+                b3.use CleanInstanceNet
               end
             end
           end
@@ -136,7 +137,7 @@ module VagrantPlugins
       autoload :IsCreated, action_root.join("is_created")
       autoload :IsStopped, action_root.join("is_stopped")
       autoload :StartInstance, action_root.join("start_instance")
-      autoload :StopInstance, action_root.join("stop_instance")
+      autoload :ForcedHalt, action_root.join("forced_halt")
       autoload :Destroy, action_root.join("destroy")
       autoload :HandleBoxMetadata, action_root.join("handle_box_metadata")
       autoload :MessageAlreadyCreated, action_root.join("message_already_created")
@@ -145,6 +146,7 @@ module VagrantPlugins
       autoload :ReadState, action_root.join("read_state")
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
       autoload :GracefulHalt, action_root.join("graceful_halt")
+      autoload :CleanInstanceNet, action_root.join("clean_instance_net")
     end
   end
 end
