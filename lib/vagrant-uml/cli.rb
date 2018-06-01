@@ -21,7 +21,7 @@ module VagrantPlugins
         begin
           Timeout.timeout(5) do
             while true
-              res = Vagrant::Util::Subprocess.execute(@mconsole_path, id, "version", retryable: true)
+              res = Vagrant::Util::Subprocess.execute(@mconsole_path, id, "version", :timeout => 1)
               return true if res.stdout =~ /^OK/
               sleep 0.5
             end
@@ -37,7 +37,7 @@ module VagrantPlugins
           return :unknown
         else
           begin
-            res = Vagrant::Util::Subprocess.execute(@mconsole_path, id, "version", retryable: true)
+            res = Vagrant::Util::Subprocess.execute(@mconsole_path, id, "version", :timeout => 1)
             if res.stdout =~ /^OK/
               @logger.debug( "instance is running")
               return :running
