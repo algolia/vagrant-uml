@@ -15,11 +15,11 @@ module VagrantPlugins
 
           b.use Builtin::Call, IsCreated do |env, b1|
             if !env[:result]
-              b.use Builtin::HandleBox
-              b.use HandleBoxMetadata
+              b1.use Builtin::HandleBox
             end
           end
 
+          b.use HandleBoxMetadata
           b.use Builtin::ConfigValidate
           b.use Builtin::Call, IsCreated do |env, b1|
             if env[:result]
