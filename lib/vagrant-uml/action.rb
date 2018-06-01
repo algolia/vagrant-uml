@@ -47,7 +47,7 @@ module VagrantPlugins
                b2.use MessageNotCreated
                next
             else
-              b2.use Builtin::Call, GracefulHalt, :poweroff do |env2, b3|
+              b2.use Builtin::Call, GracefulHalt, :poweroff, :running do |env2, b3|
                 if !env2[:result]
                   b3.use ForcedHalt
                 end
