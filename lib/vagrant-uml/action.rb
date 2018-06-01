@@ -46,7 +46,7 @@ module VagrantPlugins
                b2.use MessageNotCreated
                next
             else
-              b2.use Builtin::Call, Builtin::GracefulHalt, :poweroff, :running do |env2, b3|
+              b2.use Builtin::Call, GracefulHalt, :starting, :running do |env2, b3|
                 if !env2[:result]
                   b3.use StopInstance
                 end
@@ -143,6 +143,7 @@ module VagrantPlugins
       autoload :MessageWillNotDestroy, action_root.join("message_will_not_destroy")
       autoload :ReadState, action_root.join("read_state")
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
+      autoload :GracefulHalt, action_root.join("graceful_halt")
     end
   end
 end
