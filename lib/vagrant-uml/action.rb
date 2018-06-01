@@ -22,6 +22,7 @@ module VagrantPlugins
                 if env2[:result]
                   # Start an already created instance
                   b2.use StartInstance
+                  b2.use Builtin::WaitForCommunicator, [:starting, :running]
                 else
                   # Already created and running
                   b2.use MessageAlreadyCreated
