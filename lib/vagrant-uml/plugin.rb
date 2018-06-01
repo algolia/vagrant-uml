@@ -20,9 +20,14 @@ module VagrantPlugins
       end
 
       provider_capability(:uml, :nic_mac_address) do
-        require_relative "cap"
-        Cap
+        require_relative "cap/nic_mac_address"
+        Cap::NicMacAddress
       end 
+
+      guest_capability(:linux, :uml_halt) do
+        require_relative "cap/uml_halt"
+        Cap::UMLHalt
+      end
 
       provider(:uml) do
         # Setup i18n
