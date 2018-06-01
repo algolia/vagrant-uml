@@ -49,7 +49,7 @@ module VagrantPlugins
             else
               b2.use Builtin::Call, GracefulHalt, :poweroff do |env2, b3|
                 if !env2[:result]
-                  b3.use StopInstance
+                  b3.use ForcedHalt
                 end
                 b3.use CleanInstanceNet
               end
