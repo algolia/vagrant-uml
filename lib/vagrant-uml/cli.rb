@@ -7,6 +7,9 @@ require "ipaddr"
 module VagrantPlugins
   module UML
     class CLI
+
+      # Group all functions that will call external commands here.
+
       attr_accessor :name
 
       def initialize(name = nil)
@@ -17,6 +20,9 @@ module VagrantPlugins
         @logger = Log4r::Logger.new("vagrant::uml::cli")
       end
 
+
+      # This is meant to ensure that the mconsole socket for an instance 
+      # exists as UML takes 1 or seconds to create it after starting
       def wait_for_running(id)
         begin
           Timeout.timeout(5) do
@@ -27,12 +33,15 @@ module VagrantPlugins
             end
           end
         rescue Timeout::Error
-          # We timeout, there ios probably an issue in starting this instance ...
+          # We timeout, there is probably an issue in starting this instance ...
+          return false
         end
       end
 
 
       def state(id)
+        # Lets use the mconsole to detect the status: if the mconsole "version" command returns
+        #  returns a result this means the machine is running, else it's not
         if !@name
           return :unknown
         else
@@ -53,6 +62,13 @@ module VagrantPlugins
         end
       end
 
+
+      # Create a VFAT seed image for cloud-init in order to have the guest
+      #  correctly configured. The following is done through cloud-init:
+      #   - network config (eth0)
+      #   -  hostname set
+      #   - vagrant user creation
+      #   - /vagrant hostfs mount
       def create_cidata(*command)
         options = command.last.is_a?(Hash) ? command.pop : {}
 
@@ -63,8 +79,7 @@ module VagrantPlugins
 
         guest_ip = IPAddr.new("#{options[:host_ip]}").succ.to_s
 
-# env[:machine].config.vm.hostname
-
+        # The user-data to provide to cloud-init
         ud_template = <<EOS
 #cloud-config
 chpasswd: { expire: False }
@@ -90,6 +105,7 @@ hostname: #{options[:name]}
 fqdn: #{options[:name]}
 EOS
 
+        # the network-config data
         net_template = <<EOS
 ---
 version: 1
@@ -106,6 +122,7 @@ config:
     address:
       - 8.8.8.8
 EOS
+        # create a temporary directory that will handle the files to insert in the cloud-init seed
         Dir.mktmpdir {|dir|
           open("#{dir}/meta-data","w") do |f|
             f.write("instance-id: #{options[:machine_id]}\n")
@@ -117,6 +134,7 @@ EOS
           open("#{dir}/network-config","w") do |f|
             f.write(net_template)
           end
+          # create the vfat fs file for seed destination
           Vagrant::Util::Subprocess.execute("truncate", "--size", "100K", "#{dir}/cloud-init.vfat", retryable: true)
           Vagrant::Util::Subprocess.execute(mkfs,"-n", "cidata", "#{dir}/cloud-init.vfat", retryable: true)
           mtools_env = []
@@ -127,6 +145,7 @@ EOS
       end
 
 
+      # Run the UML kernel with all the options
       def run_uml(*command)
         options = command.last.is_a?(Hash) ? command.pop : {}
         command = command.dup
@@ -153,26 +172,45 @@ EOS
       def create_switched_net(options)
       end
 
+
+      # Create all the network ressources to be used by the UML instance
+      #  thats the most painfull/dirty part cause it uses privileged commands
+      #  and for now restricts the usage of this provider to root or sudoers
       def create_standalone_net(options)
+        # use a /30 network for the tuntap with guest_ip=host_ip+1
         guest_ip = IPAddr.new("#{options[:host_ip]}").succ.to_s
+
+        # Create the tuntap device and check it worked
         res = Vagrant::Util::Subprocess.execute(@tunctl_path, "-t", options[:name], retryable: true)
         res.stdout =~ /Set '(.+?)' persistent and owned by uid (.+?)/
         if $1.to_s != options[:name]
           raise "TUN/TAP interface name mismatch !"
         end
+        # Set the ip address of the tuntap device on host side
+        Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip]+"/30", "up", retryable: true)
+
+        # get the default gateway interface (we'll apply some nat rules on it later)
         res = Vagrant::Util::Subprocess.execute("ip", "-4", "route", "list", "match", "0.0.0.0", retryable: true)
         res.stdout =~ /default via ([0-9.]+) dev (\S+)(\s+\S+)*/
         default_interface = $2.to_s
-        Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip]+"/30", "up", retryable: true)
+ 
+        # allow ip forwarding to ensure the guest will have access to outside world
         Vagrant::Util::Subprocess.execute("sysctl", "-w", "net.ipv4.ip_forward=1", retryable: true)
+
+        # Create a MASQUERADING rule for the guest to be able to reach the rest of the world using the host as NAT gateway
+        # Use the comment iptable match to ensure a rule belongs to a specific instance
         Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", guest_ip, "-o", default_interface, "-m", "comment", "--comment", options[:name], "-j", "MASQUERADE" ,retryable: true)
       end
 
       def destroy_standalone_net(id)
+        # Clean the MASQUERADE rule created for this instance id, it has tagged in its comment with the id
+        # List all existing NAT POSTROUTING rules and parse
         res = Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-L", "POSTROUTING", "--line-numbers", "-n", retryable: true)
         res.stdout =~ /([0-9]+)\s+MASQUERADE\s+all\s+--\s+[0-9.]+\s+0\.0\.0\.0\/0\s+\/\*\s+#{id}\s+\*\//
         rule_number = $1.to_s
+        # Clean it based on its rule number (if it exists)
         Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-D", "POSTROUTING", rule_number, retryable: true) if rule_number && rule_number.length > 0
+        # Now deletes the tuntap device
         Vagrant::Util::Subprocess.execute("ip", "link", "delete", id, retryable: true)
       end
         

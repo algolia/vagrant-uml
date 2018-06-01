@@ -37,6 +37,8 @@ module VagrantPlugins
       end
 
 
+      # Finalize configurtion parameters
+      # I choose 512m of RAM and 1 cpu as default
       def finalize!
         @create_args = []  if @create_args == UNSET_VALUE
         @name        = nil if @name == UNSET_VALUE
@@ -45,6 +47,7 @@ module VagrantPlugins
         @cpus        = 1   if @cpus == UNSET_VALUE
       end
 
+      # Basic config parameters validation
       def validate(machine)
         errors = _detected_errors
         if !@create_args.is_a?(Array)

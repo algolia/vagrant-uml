@@ -1,5 +1,4 @@
 require "pathname"
-
 require "vagrant/action/builder"
 
 module VagrantPlugins
@@ -38,7 +37,7 @@ module VagrantPlugins
         end
       end
 
-      # This action is called to halt the machine.
+      # This action is called to halt the machine with a graceful shutdown as first step.
       def self.action_halt
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
@@ -107,6 +106,7 @@ module VagrantPlugins
         end
       end
 
+      # This action is called to run a single command via SSH.
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
