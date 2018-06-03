@@ -30,6 +30,7 @@ module VagrantPlugins
 
           # Generate a randon and valid MAC for this instance and store it to be persistent
           env[:machine].provider_config.mac = generate_mac
+          # Write this in file local to the machine
           mac_file = data_dir.join("action_create")
           mac_file.open("w") do |f|
             f.write(env[:machine].provider_config.mac)
@@ -63,10 +64,20 @@ module VagrantPlugins
           raise "Network range (10.0.113.0) exhaustion" if smallest==0
           host_ip="10.0.113.#{smallest}"
 
+          # Write the computed host ip address in a file
+          host_ip_file = data_dir.join("host_ip_address")
+          host_ip_file.open("w") do |f|
+            f.write(host_ip)
+          end
+
+
           # Create a cloud-init seed image
           @cli.create_cidata(:root_path => env[:machine].env.root_path.to_s, :machine_id => env[:machine].id, :name => env[:machine].name, :mac => env[:machine].provider_config.mac, :data_dir => data_dir.to_s, :host_ip => host_ip)
 
           # Store the host ip associated with this instance in the global machine index
+          #  this is the same job as eralier writing in a file but we can't use this info
+          #  in the read_ssh_info as it locks the machine and may generate issues
+          #  with WaitForCommunicator
           entry = env[:machine].env.machine_index.get(env[:machine].index_uuid)
           entry.extra_data["host_ip"] = host_ip
           env[:machine].env.machine_index.set(entry)
