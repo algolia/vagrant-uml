@@ -91,7 +91,6 @@ module VagrantPlugins
       # key.
       def self.action_read_ssh_info
         Vagrant::Action::Builder.new.tap do |b|
-          b.use Builtin::ConfigValidate
           b.use ReadSSHInfo
         end
       end
@@ -100,14 +99,16 @@ module VagrantPlugins
       # This action is called to SSH into the machine.
       def self.action_ssh
         Vagrant::Action::Builder.new.tap do |b|
-          b.use Builtin::ConfigValidate
           b.use Builtin::Call, IsCreated do |env, b2|
             if !env[:result]
               b2.use MessageNotCreated
               next
             end
-
-            b2.use Builtin::SSHExec
+            b2.use Builtin::Call, IsStopped do |env2, b3|
+              if !env2[:result]
+                b3.use Builtin::SSHExec
+              end
+            end
           end
         end
       end
@@ -115,16 +116,20 @@ module VagrantPlugins
       # This action is called to run a single command via SSH.
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
-          b.use Builtin::ConfigValidate
           b.use Builtin::Call, IsCreated do |env, b2|
             if !env[:result]
               b2.use MessageNotCreated
               next
             end
-
-            b2.use Builtin::SSHRun
+            b2.use Builtin::Call, IsStopped do |env2, b3|
+              if !env2[:result]
+                b3.use Builtin::SSHExec
+              end
+            end
           end
         end
+
+
       end
 
       # This action is called to read the state of the machine. The
@@ -132,7 +137,6 @@ module VagrantPlugins
       # key.
       def self.action_read_state
         Vagrant::Action::Builder.new.tap do |b|
-          b.use Builtin::ConfigValidate
           b.use ReadState
         end
       end
