@@ -50,7 +50,7 @@ module VagrantPlugins
       end
 
       def state
-        env = @machine.action("read_state")
+        env = @machine.action("read_state", lock: false)
         state_id = env[:machine_state_id]
         state_id = :unknown if !state_id
 
