@@ -31,7 +31,7 @@ module VagrantPlugins
           # Generate a randon and valid MAC for this instance and store it to be persistent
           env[:machine].provider_config.mac = generate_mac
           # Write this in file local to the machine
-          mac_file = data_dir.join("action_create")
+          mac_file = data_dir.join("mac_address")
           mac_file.open("w") do |f|
             f.write(env[:machine].provider_config.mac)
           end
