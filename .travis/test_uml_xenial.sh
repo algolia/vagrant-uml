@@ -2,6 +2,9 @@
 
 set -e
 
+echo "Building plugin"
+bundle exec rake
+
 echo "Installing vagrant plugin"
 vagrant plugin install ./pkg/vagrant-uml-0.0.2.gem
 
