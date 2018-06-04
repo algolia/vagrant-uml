@@ -1,0 +1,14 @@
+language: ruby
+
+sudo: true
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq rake ruby-bundler bundler uml-utilities mtools iptables
+
+before_scripts:
+  - wget https://releases.hashicorp.com/vagrant/2.1.1/vagrant_2.1.1_x86_64.deb
+  - dpkg -i vagrant_2.1.1_x86_64.deb
+
+scripts:
+  - .travis/test_uml_xenial.sh
