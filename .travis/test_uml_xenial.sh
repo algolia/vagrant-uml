@@ -6,11 +6,11 @@ set -e
 export PATH=/opt/vagrant/embedded/bin:$PATH 
 
 echo "Bundler install needed gems"
-gem install bundler
-bundle install --no-deployment
+/opt/vagrant/embedded/bin/gem install bundler
+/opt/vagrant/embedded/bin/bundle install --no-deployment
 
 echo "Building plugin"
-bundle exec rake
+PATH=/opt/vagrant/embedded/bin:$PATH /opt/vagrant/embedded/bin/bundle exec rake
 
 echo "Installing vagrant plugin"
 vagrant plugin install ./pkg/vagrant-uml-0.0.2.gem
@@ -37,7 +37,6 @@ end
 EOF
 
 vagrant up --provider=uml
-vagrant ssh -c "uname -a"
 vagrant halt
 popd
 
