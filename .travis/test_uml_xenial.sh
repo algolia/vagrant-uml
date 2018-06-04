@@ -3,7 +3,7 @@
 set -e
 
 echo "Bundler install needed gems"
-bundle install
+bundle install --no-deployment
 
 echo "Building plugin"
 bundle exec rake
