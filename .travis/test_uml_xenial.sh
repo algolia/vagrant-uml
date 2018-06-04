@@ -2,12 +2,6 @@
 
 set -e
 
-echo "Running bundler install"
-bundler install
-
-echo "Running rake"
-rake build
-
 echo "Installing vagrant plugin"
 vagrant plugin install ./pkg/vagrant-uml-0.0.2.gem
 
