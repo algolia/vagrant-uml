@@ -23,6 +23,19 @@ mkdir /tmp/instance
 pushd /tmp/instance
 vagrant init algolia/uml/xenial64
 
+# Ensure the boot process will not report an error
+cat <<EOF >Vagrantfile
+Vagrant.configure("2") do |config|
+  config.vm.provider "uml"
+  config.vm.box = "algolia/uml/xenial64"
+  config.vm.boot_timeout=600
+  config.vm.provider "uml" do |vb|
+    vb.memory = 2048
+    vb.cpus = 2
+  end
+end
+EOF
+
 vagrant up --provider=uml
 vagrant ssh -c "uname -a"
 vagrant halt
