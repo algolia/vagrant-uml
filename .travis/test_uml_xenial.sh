@@ -16,7 +16,7 @@ echo "Installing vagrant plugin"
 vagrant plugin install ./pkg/vagrant-uml-0.0.2.gem
 
 echo "Getting Vagrant UML box"
-vagrant box add https://alg-archistore.s3.amazonaws.com/public/infra/vagrant/uml/xenial64/algolia_uml_xenial64-0.0.2.box
+vagrant box add https://alg-archistore.s3.amazonaws.com/public/infra/vagrant/uml/xenial64/box_metadata-0.0.2.json
 
 echo "Try the UML instance"
 mkdir /tmp/instance
