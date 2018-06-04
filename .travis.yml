@@ -8,7 +8,7 @@ before_install:
 
 before_scripts:
   - wget https://releases.hashicorp.com/vagrant/2.1.1/vagrant_2.1.1_x86_64.deb
-  - dpkg -i vagrant_2.1.1_x86_64.deb
+  - sudo dpkg -i vagrant_2.1.1_x86_64.deb
 
 scripts:
   - sudo .travis/test_uml_xenial.sh
