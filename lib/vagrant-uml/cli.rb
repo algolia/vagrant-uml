@@ -25,11 +25,15 @@ module VagrantPlugins
       # exists as UML takes 1 or seconds to create it after starting
       def wait_for_running(id)
         begin
-          Timeout.timeout(5) do
+          Timeout.timeout(30) do
             while true
-              res = Vagrant::Util::Subprocess.execute(@mconsole_path, id, "version", :timeout => 1)
-              return true if res.stdout =~ /^OK/
-              sleep 0.5
+              begin 
+                res = Vagrant::Util::Subprocess.execute(@mconsole_path, id, "version", :timeout => 1)
+                return true if res.stdout =~ /^OK/
+                sleep 0.5
+              rescue Vagrant::Util::Subprocess::TimeoutExceeded
+                sleep 0.5
+              end
             end
           end
         rescue Timeout::Error
