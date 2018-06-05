@@ -130,7 +130,7 @@ module VagrantPlugins
             end
             b2.use Builtin::Call, IsStopped do |env2, b3|
               if !env2[:result]
-                b3.use Builtin::SSHExec
+                b3.use Builtin::SSHRun
               end
             end
           end
