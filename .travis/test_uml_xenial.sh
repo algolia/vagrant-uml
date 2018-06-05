@@ -2,16 +2,6 @@
 
 set -e
 
-# Use the ruby version embedded with vagrant
-export PATH=/opt/vagrant/embedded/bin:$PATH 
-
-echo "Bundler install needed gems"
-/opt/vagrant/embedded/bin/gem install bundler
-/opt/vagrant/embedded/bin/bundle install --no-deployment
-
-echo "Building plugin"
-PATH=/opt/vagrant/embedded/bin:$PATH /opt/vagrant/embedded/bin/bundle exec rake
-
 echo "Installing vagrant plugin"
 vagrant plugin install ./pkg/vagrant-uml-0.0.2.gem
 

@@ -9,4 +9,5 @@ before_script:
   - sudo dpkg -i vagrant_2.1.1_x86_64.deb
 
 script:
+  - .travis/build_plugin.sh
   - sudo .travis/test_uml_xenial.sh
