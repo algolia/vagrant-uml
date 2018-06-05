@@ -2,11 +2,14 @@
 
 set -e
 
+UML_VERSION=$(ruby -I ./lib -e "require 'vagrant-uml/version.rb' ; p VagrantPlugins::UML::VERSION" | tr  -d '"')
+BOX_VERSION=0.0.2
+
 echo "Installing vagrant plugin"
-vagrant plugin install ./pkg/vagrant-uml-0.0.2.gem
+vagrant plugin install ./pkg/vagrant-uml-${UML_VERSION}.gem
 
 echo "Getting Vagrant UML box"
-vagrant box add https://alg-archistore.s3.amazonaws.com/public/infra/vagrant/uml/xenial64/box_metadata-0.0.2.json
+vagrant box add https://alg-archistore.s3.amazonaws.com/public/infra/vagrant/uml/xenial64/box_metadata-${BOX_VERSION}.json
 
 echo "Try the UML instance"
 mkdir /tmp/instance
