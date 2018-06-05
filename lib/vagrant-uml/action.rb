@@ -29,6 +29,7 @@ module VagrantPlugins
                   # Start an already created instance
                   b2.use StartInstance
                   b2.use Builtin::WaitForCommunicator, [:starting, :running]
+                  b2.use Builtin::Provision
                 else
                   # Already created and running
                   b2.use MessageAlreadyCreated
@@ -39,6 +40,7 @@ module VagrantPlugins
               b1.use Create
               b1.use StartInstance
               b1.use Builtin::WaitForCommunicator, [:starting, :running]
+              b1.use Builtin::Provision
             end
           end
         end
