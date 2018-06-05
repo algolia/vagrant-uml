@@ -30,6 +30,7 @@ end
 EOF
 
 vagrant up --provider=uml
+vagrant ssh -c 'uname -a' | grep -q '^Linux'
 vagrant halt
 popd
 
