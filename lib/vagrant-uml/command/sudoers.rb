@@ -44,13 +44,13 @@ module VagrantPlugins
           ip_path = Vagrant::Util::Which.which("ip")
 
           commands = [
-            "#{tunctl_path} -u #{options[:user]} -t uml-[[\:alnum\:]]*",
+            "#{tunctl_path} -u #{options[:user]} -t uml-[a-zA-Z0-9]+",
             "#{sysctl_path} -w net.ipv4.ip_forward=1",
-            "#{ifconfig_path} uml-[[\:alnum\:]]+ [[\:digit\:]\.]+/30 up",
-            "#{iptables_path} -t nat -A POSTROUTING -s [[\:digit\:]\.]+ -o [[\:alnum\:]-\.]+ -m comment --comment uml-[[\:alnum\:]] -j MASQUERADE",
+            "#{ifconfig_path} uml-[[\:alnum\:]]+ [0-9\.]+/30 up",
+            "#{iptables_path} -t nat -A POSTROUTING -s [0-9\.]+ -o [a-zA-Z0-9\-\.]+ -m comment --comment uml-[a-zA-Z0-9]+ -j MASQUERADE",
             "#{iptables_path} -t nat -L POSTROUTING --line-numbers -n",
-            "#{iptables_path} -t nat -D POSTROUTING [[\:digit\:]]+",
-            "#{ip_path} link delete uml-[[\:alnum\:]]+"
+            "#{iptables_path} -t nat -D POSTROUTING [0-9]+",
+            "#{ip_path} link delete uml-[a-zA-Z0-9]+"
           ]
 
           sudoers_path = "/etc/sudoers.d/vagrant-uml-#{options[:user]}"
