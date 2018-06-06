@@ -183,13 +183,13 @@ EOS
         guest_ip = IPAddr.new("#{options[:host_ip]}").succ.to_s
 
         # Create the tuntap device and check it worked
-        res = Vagrant::Util::Subprocess.execute("sudo", @tunctl_path, "-u", ENV['USER'], "-t", options[:name], retryable: true)
+        res = Vagrant::Util::Subprocess.execute("sudo", @tunctl_path, "-u", ENV['USER'], "-t", "uml-#{options[:name]}", retryable: true)
         res.stdout =~ /Set '(.+?)' persistent and owned by uid (.+?)/
         if $1.to_s != options[:name]
           raise "TUN/TAP interface name mismatch !"
         end
         # Set the ip address of the tuntap device on host side
-        Vagrant::Util::Subprocess.execute("sudo", "ifconfig", options[:name], options[:host_ip]+"/30", "up", retryable: true)
+        Vagrant::Util::Subprocess.execute("sudo", "ifconfig", "uml-#{options[:name]}", options[:host_ip]+"/30", "up", retryable: true)
 
         # get the default gateway interface (we'll apply some nat rules on it later)
         res = Vagrant::Util::Subprocess.execute("ip", "-4", "route", "list", "match", "0.0.0.0", retryable: true)
@@ -213,7 +213,7 @@ EOS
         # Clean it based on its rule number (if it exists)
         Vagrant::Util::Subprocess.execute("sudo", "iptables", "-t", "nat", "-D", "POSTROUTING", rule_number, retryable: true) if rule_number && rule_number.length > 0
         # Now deletes the tuntap device
-        Vagrant::Util::Subprocess.execute("sudo", "ip", "link", "delete", id, retryable: true)
+        Vagrant::Util::Subprocess.execute("sudo", "ip", "link", "delete", "uml-#{id}", retryable: true)
       end
         
     end
