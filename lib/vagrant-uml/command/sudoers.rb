@@ -10,6 +10,15 @@ module VagrantPlugins
           "Create a sudoers file to allow a non privileged users to run UML instances"
         end
 
+        def initialize(argv, env)
+          super
+          @argv
+          @env = env
+          I18n.load_path << File.expand_path("locales/en.yml", VagrantPlugins::UML.source_root)
+          I18n.reload!
+        end
+
+
         def execute
           options = { user: ENV['USER'] }
 
@@ -19,6 +28,10 @@ module VagrantPlugins
             opts.on('-u user', '--user user', String, "The user for which to create the policy (defaults to '#{options[:user]}')") do |u|
               options[:user] = u
             end
+            opts.on("-c", "--stdout", "create an output suitable to pipe to bash or sudo bash") do |c|
+              options[:stdout] = c
+            end
+
           end
 
           argv = parse_options(opts)
@@ -41,11 +54,10 @@ module VagrantPlugins
           ]
 
           sudoers_path = "/etc/sudoers.d/vagrant-uml-#{options[:user]}"
-          sudoers = create_sudoers!(options[:user], commands)
+          create_sudoers!(options[:user], commands)
+          @env.ui.success(I18n.t("vagrant_uml.sudoer_file_created"))
+          @env.ui.detail(I18n.t("vagrant_uml.sudoer_advise", :sudoer_file => FileUtils.expand_path("./vagrant-uml-#{user}")))
 
-          su_copy([
-            {source: sudoers, target: sudoers_path, mode: "0440"}
-          ])
         end
 
 
