@@ -56,7 +56,7 @@ module VagrantPlugins
           sudoers_path = "/etc/sudoers.d/vagrant-uml-#{options[:user]}"
           create_sudoers!(options[:user], commands)
           @env.ui.success(I18n.t("vagrant_uml.sudoer_file_created"))
-          @env.ui.detail(I18n.t("vagrant_uml.sudoer_advise", :sudoer_file => FileUtils.expand_path("./vagrant-uml-#{options[:user]}")))
+          @env.ui.detail(I18n.t("vagrant_uml.sudoer_advise", :sudoer_file => File.expand_path("./vagrant-uml-#{options[:user]}")))
 
         end
 
