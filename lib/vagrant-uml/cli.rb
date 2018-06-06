@@ -184,7 +184,7 @@ EOS
 
         # Create the tuntap device and check it worked
         res = Vagrant::Util::Subprocess.execute("sudo", @tunctl_path, "-u", ENV['USER'], "-t", "uml-#{options[:name]}", retryable: true)
-        res.stdout =~ /Set '(.+?)' persistent and owned by uid (.+?)/
+        res.stdout =~ /Set 'uml-(.+?)' persistent and owned by uid (.+?)/
         if $1.to_s != options[:name]
           raise "TUN/TAP interface name mismatch !"
         end
