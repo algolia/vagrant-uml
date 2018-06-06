@@ -25,21 +25,24 @@ module VagrantPlugins
           return unless argv
 
           tunctl_path = Vagrant::Util::Which.which("tunctl")
+          sysctl_path = Vagrant::Util::Which.which("sysctl")
+          ifconfig_path = Vagrant::Util::Which.which("ifconfig")
+          iptables_path = Vagrant::Util::Which.which("iptables")
+          ip_path = Vagrant::Util::Which.which("ip")
 
           commands = [
             "#{tunctl_path} -u #{options[:user]} -t uml-[[\:alnum\:]]*",
-            "sysctl -w net.ipv4.ip_forward=1",
-            "ifconfig uml-[[\:alnum\:]]+ [[\:digit\:]\.]+/30 up",
-            "iptables -t nat -A POSTROUTING -s [[\:digit\:]\.]+ -o [[\:alnum\:]-\.]+ -m comment --comment uml-[[\:alnum\:]] -j MASQUERADE",
-            "iptables -t nat -L POSTROUTING --line-numbers -n",
-            "iptables -t nat -D POSTROUTING [[\:digit\:]]+",
-            "ip link delete uml-[[\:alnum\:]]+"
+            "#{sysctl_path} -w net.ipv4.ip_forward=1",
+            "#{ifconfig_path} uml-[[\:alnum\:]]+ [[\:digit\:]\.]+/30 up",
+            "#{iptables_path} -t nat -A POSTROUTING -s [[\:digit\:]\.]+ -o [[\:alnum\:]-\.]+ -m comment --comment uml-[[\:alnum\:]] -j MASQUERADE",
+            "#{iptables_path} -t nat -L POSTROUTING --line-numbers -n",
+            "#{iptables_path} -t nat -D POSTROUTING [[\:digit\:]]+",
+            "#{ip_path} link delete uml-[[\:alnum\:]]+"
           ]
-          commands.each do |cmd|
-            sudoers = create_sudoers!(options[:user], cmd)
-          end
 
           sudoers_path = "/etc/sudoers.d/vagrant-uml-#{options[:user]}"
+          sudoers = create_sudoers!(options[:user], commands)
+
           su_copy([
             {source: sudoers, target: sudoers_path, mode: "0440"}
           ])
@@ -48,13 +51,19 @@ module VagrantPlugins
 
         private
 
-        def create_sudoers!(user, command)
+        def create_sudoers!(user, commands)
+          template = Vagrant::Util::TemplateRenderer.new(
+              'sudoers',
+              :template_root  => VagrantPlugins::UML.source_root.join('templates').to_s,
+              :user           => user,
+              :commands       => commands
+            )
+
           sudoers = Tempfile.new('vagrant-uml-sudoers').tap do |file|
-            file.puts "# Automatically created by vagrant-uml"
-            file.puts "#{user} ALL=(root) NOPASSWD: #{command}"
+            file.puts template.render
           end
           sudoers.close
-          sudoers.path
+          FileUtils.cp(sudoers.path, "./vagrant-uml-#{user}")
         end
 
         def su_copy(files)
