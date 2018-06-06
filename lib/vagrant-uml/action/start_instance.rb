@@ -37,7 +37,7 @@ module VagrantPlugins
               :mem => env[:machine].provider_config.memory,
               :ncpus => env[:machine].provider_config.cpus,
 #              :eth0 => "daemon,#{env[:machine].provider_config.mac},unix,/tmp/uml_switch.ctl",
-              :eth0 => "tuntap,#{env[:machine].id},#{env[:machine].provider_config.mac},#{host_ip}",
+              :eth0 => "tuntap,uml-#{env[:machine].id},#{env[:machine].provider_config.mac},#{host_ip}",
               :con0 => "null,fd:1",
               :con1 => "null,fd:2",
               :con => "pts",
