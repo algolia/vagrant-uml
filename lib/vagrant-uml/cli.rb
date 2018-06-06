@@ -183,13 +183,13 @@ EOS
         guest_ip = IPAddr.new("#{options[:host_ip]}").succ.to_s
 
         # Create the tuntap device and check it worked
-        res = Vagrant::Util::Subprocess.execute(@tunctl_path, "-t", options[:name], retryable: true)
+        res = Vagrant::Util::Subprocess.execute("sudo", @tunctl_path, "-u", ENV['USER'], "-t", options[:name], retryable: true)
         res.stdout =~ /Set '(.+?)' persistent and owned by uid (.+?)/
         if $1.to_s != options[:name]
           raise "TUN/TAP interface name mismatch !"
         end
         # Set the ip address of the tuntap device on host side
-        Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip]+"/30", "up", retryable: true)
+        Vagrant::Util::Subprocess.execute("sudo", "ifconfig", options[:name], options[:host_ip]+"/30", "up", retryable: true)
 
         # get the default gateway interface (we'll apply some nat rules on it later)
         res = Vagrant::Util::Subprocess.execute("ip", "-4", "route", "list", "match", "0.0.0.0", retryable: true)
@@ -197,23 +197,23 @@ EOS
         default_interface = $2.to_s
  
         # allow ip forwarding to ensure the guest will have access to outside world
-        Vagrant::Util::Subprocess.execute("sysctl", "-w", "net.ipv4.ip_forward=1", retryable: true)
+        Vagrant::Util::Subprocess.execute("sudo", "sysctl", "-w", "net.ipv4.ip_forward=1", retryable: true)
 
         # Create a MASQUERADING rule for the guest to be able to reach the rest of the world using the host as NAT gateway
         # Use the comment iptable match to ensure a rule belongs to a specific instance
-        Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", guest_ip, "-o", default_interface, "-m", "comment", "--comment", options[:name], "-j", "MASQUERADE" ,retryable: true)
+        Vagrant::Util::Subprocess.execute("sudo", "iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", guest_ip, "-o", default_interface, "-m", "comment", "--comment", options[:name], "-j", "MASQUERADE" ,retryable: true)
       end
 
       def destroy_standalone_net(id)
         # Clean the MASQUERADE rule created for this instance id, it has tagged in its comment with the id
         # List all existing NAT POSTROUTING rules and parse
-        res = Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-L", "POSTROUTING", "--line-numbers", "-n", retryable: true)
+        res = Vagrant::Util::Subprocess.execute("sudo", "iptables", "-t", "nat", "-L", "POSTROUTING", "--line-numbers", "-n", retryable: true)
         res.stdout =~ /([0-9]+)\s+MASQUERADE\s+all\s+--\s+[0-9.]+\s+0\.0\.0\.0\/0\s+\/\*\s+#{id}\s+\*\//
         rule_number = $1.to_s
         # Clean it based on its rule number (if it exists)
-        Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-D", "POSTROUTING", rule_number, retryable: true) if rule_number && rule_number.length > 0
+        Vagrant::Util::Subprocess.execute("sudo", "iptables", "-t", "nat", "-D", "POSTROUTING", rule_number, retryable: true) if rule_number && rule_number.length > 0
         # Now deletes the tuntap device
-        Vagrant::Util::Subprocess.execute("ip", "link", "delete", id, retryable: true)
+        Vagrant::Util::Subprocess.execute("sudo", "ip", "link", "delete", id, retryable: true)
       end
         
     end
