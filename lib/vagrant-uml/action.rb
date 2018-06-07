@@ -8,6 +8,7 @@ module VagrantPlugins
       Builtin = Vagrant::Action::Builtin
       Builder = Vagrant::Action::Builder
 
+
       # This action brings the machine up from nothing, including creating the
       # container, configuring metadata, and booting.
       def self.action_up
@@ -28,6 +29,7 @@ module VagrantPlugins
                   # Start an already created instance
                   b2.use StartInstance
                   b2.use Builtin::WaitForCommunicator, [:starting, :running]
+                  b2.use Builtin::Provision
                 else
                   # Already created and running
                   b2.use MessageAlreadyCreated
@@ -38,10 +40,12 @@ module VagrantPlugins
               b1.use Create
               b1.use StartInstance
               b1.use Builtin::WaitForCommunicator, [:starting, :running]
+              b1.use Builtin::Provision
             end
           end
         end
       end
+
 
       # This action is called to halt the machine with a graceful shutdown as first step.
       def self.action_halt
@@ -62,6 +66,7 @@ module VagrantPlugins
           end
         end
       end
+
 
       # This action is called to terminate the machine.
       def self.action_destroy
@@ -85,6 +90,7 @@ module VagrantPlugins
           end
         end
       end
+
 
       # This action is called to read the SSH info of the machine. The
       # resulting state is expected to be put into the `:machine_ssh_info`
@@ -113,6 +119,7 @@ module VagrantPlugins
         end
       end
 
+
       # This action is called to run a single command via SSH.
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
@@ -123,14 +130,28 @@ module VagrantPlugins
             end
             b2.use Builtin::Call, IsStopped do |env2, b3|
               if !env2[:result]
-                b3.use Builtin::SSHExec
+                b3.use Builtin::SSHRun
               end
             end
           end
         end
-
-
       end
+
+
+      # This action is called when `vagrant provision` is called.
+      def self.action_provision
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use Builtin::ConfigValidate
+          b.use Builtin::Call, IsCreated do |env, b2|
+            if !env[:result]
+              b2.use MessageNotCreated
+              next
+            end
+            b2.use Builtin::Provision
+          end
+        end
+      end
+
 
       # This action is called to read the state of the machine. The
       # resulting state is expected to be put into the `:machine_state_id`
