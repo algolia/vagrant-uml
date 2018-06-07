@@ -178,6 +178,7 @@ module VagrantPlugins
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
       autoload :GracefulHalt, action_root.join("graceful_halt")
       autoload :CleanInstanceNet, action_root.join("clean_instance_net")
+      autoload :IsSudoer, action_root.join("is_sudoer")
     end
   end
 end
