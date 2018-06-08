@@ -21,21 +21,23 @@ module VagrantPlugins
       end
 
       def is_full_sudo_allowed
+        # Check that the user is "full" sudoer
         res = Vagrant::Util::Subprocess.execute("sudo", "-l")
         return true if res.stdout =~ /[[:blank:]]*\(ALL\) NOPASSWD: ALL/
         false
       end  
 
       def is_sudo_allowed
+        # Lets figure out if the user already added the sudo rules generated from `vagrant uml-sudoer`
         user = ENV['USER']
-        regex <<~REGEX
-          [[:blank:]](root) NOPASSWD: \/usr\/sbin\/tunctl -u vagrant -t uml-\[a-zA-Z0-9\]\+
-          [[:blank:]](root) NOPASSWD: \/sbin\/sysctl -w net.ipv4.ip_forward\=1
-          [[:blank:]](root) NOPASSWD: \/sbin\/ifconfig uml-\[a-zA-Z0-9\]\+ \[0-9.\]\+\/30 up
-          [[:blank:]](root) NOPASSWD: \/sbin\/iptables -t nat -A POSTROUTING -s \[0-9\.\]\+ -o \[a-zA-Z0-9-\.\]\+ -m comment --comment uml-\[a-zA-Z0-9\]\+ -j MASQUERADE
-          [[:blank:]](root) NOPASSWD: \/sbin\/iptables -t nat -L POSTROUTING --line-numbers -n
-          [[:blank:]](root) NOPASSWD: \/sbin\/iptables -t nat -D POSTROUTING \[0-9\]\+
-          [[:blank:]](root) NOPASSWD: \/sbin\/ip link delete uml-\[a-zA-Z0-9\]\+
+        regex = <<~REGEX
+          \s+\\\(root\\\) NOPASSWD: \/usr\/sbin\/tunctl -u vagrant -t uml-\\\[a-zA-Z0-9\\\]\\\+
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/sysctl -w net\.ipv4.ip_forward\\\\=1
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/ifconfig uml-\\\[a-zA-Z0-9\\\]\\\+ \\\[0-9.\\\]\\\+\/30 up
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -t nat -A POSTROUTING -s \\\[0-9\\\.\\\]\\\+ -o \\\[a-zA-Z0-9\\\-\\\.\\\]\\\+ -m comment --comment uml-\\\[a-zA-Z0-9\\\]\\\+ -j MASQUERADE
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -t nat -L POSTROUTING --line-numbers -n
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -t nat -D POSTROUTING \\\[0-9\\\]\\\+
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/ip link delete uml-\\\[a-zA-Z0-9\\\]\\\+
         REGEX
         res = Vagrant::Util::Subprocess.execute("sudo", "-l")
         return true if res.stdout =~ /#{regex}/
