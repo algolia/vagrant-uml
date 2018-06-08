@@ -12,6 +12,7 @@ module VagrantPlugins
       # This action brings the machine up from nothing, including creating the
       # container, configuring metadata, and booting.
       def self.action_up
+        Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::Call, IsSudoer do |env1,b1|
             if !env1[:result]
               b1.use MessageNotSudoer
