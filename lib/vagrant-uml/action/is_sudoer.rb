@@ -1,8 +1,9 @@
 module VagrantPlugins
   module UML
     module Action
-      # This can be used with "Call" built-in to check if the machine
-      # is created and branch in the middleware.
+      # This action checks that the user has sufficient permission
+      # to execute all privilged commands needed for the network config
+      # of an UML instance.
       class IsSudoer
         def initialize(app, env)
           @app = app
@@ -10,6 +11,9 @@ module VagrantPlugins
 
         def call(env)
           env[:result] = @cli.is_full_sudo_allowed
+          if !env[:result]
+            env[:result] = @cli.is_sudo_allowed
+          end
           @app.call(env)
         end
       end
