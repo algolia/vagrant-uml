@@ -6,6 +6,7 @@ module VagrantPlugins
       # of an UML instance.
       class IsSudoer
         def initialize(app, env)
+          @cli = CLI.new(env[:machine].name)
           @app = app
         end
 
