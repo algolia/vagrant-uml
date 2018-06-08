@@ -37,6 +37,19 @@ module VagrantPlugins
           argv = parse_options(opts)
           return unless argv
 
+          sudoers_path = "/etc/sudoers.d/vagrant-uml-#{options[:user]}"
+          create_sudoers!(options[:user], options[:stdout])
+          if !options[:stdout]
+            @env.ui.success(I18n.t("vagrant_uml.sudoer_file_created"))
+            @env.ui.detail(I18n.t("vagrant_uml.sudoer_advise", :user => options[:user],
+              :sudoer_file => File.expand_path("./vagrant-uml-#{options[:user]}")))
+          end
+        end
+
+
+        private
+
+        def create_sudoers!(user, to_stdout=false)
           tunctl_path = Vagrant::Util::Which.which("tunctl")
           sysctl_path = Vagrant::Util::Which.which("sysctl")
           ifconfig_path = Vagrant::Util::Which.which("ifconfig")
@@ -44,7 +57,7 @@ module VagrantPlugins
           ip_path = Vagrant::Util::Which.which("ip")
 
           commands = [
-            "#{tunctl_path} -u #{options[:user]} -t uml-[a-zA-Z0-9]+",
+            "#{tunctl_path} -u #{user} -t uml-[a-zA-Z0-9]+",
             "#{sysctl_path} -w net.ipv4.ip_forward=1",
             "#{ifconfig_path} uml-[a-zA-Z0-9]+ [0-9\.]+/30 up",
             "#{iptables_path} -t nat -A POSTROUTING -s [0-9\.]+ -o [a-zA-Z0-9\-\.]+ -m comment --comment uml-[a-zA-Z0-9]+ -j MASQUERADE",
@@ -53,17 +66,6 @@ module VagrantPlugins
             "#{ip_path} link delete uml-[a-zA-Z0-9]+"
           ]
 
-          sudoers_path = "/etc/sudoers.d/vagrant-uml-#{options[:user]}"
-          create_sudoers!(options[:user], commands)
-          @env.ui.success(I18n.t("vagrant_uml.sudoer_file_created"))
-          @env.ui.detail(I18n.t("vagrant_uml.sudoer_advise", :sudoer_file => File.expand_path("./vagrant-uml-#{options[:user]}")))
-
-        end
-
-
-        private
-
-        def create_sudoers!(user, commands)
           template = Vagrant::Util::TemplateRenderer.new(
               'sudoers',
               :template_root  => VagrantPlugins::UML.source_root.join('templates').to_s,
@@ -71,23 +73,15 @@ module VagrantPlugins
               :commands       => commands
             )
 
-          sudoers = Tempfile.new('vagrant-uml-sudoers').tap do |file|
-            file.puts template.render
+          if to_stdout
+            puts template.render.gsub(/^/,'echo \'').gsub(/$/,"\' >> /etc/sudoers.d/vagrant-uml-#{user}").gsub(/^\'.*/,'')
+          else
+            sudoers = Tempfile.new('vagrant-uml-sudoers').tap do |file|
+              file.puts template.render
+            end
+            sudoers.close
+            FileUtils.cp(sudoers.path, "./vagrant-uml-#{user}")
           end
-          sudoers.close
-          FileUtils.cp(sudoers.path, "./vagrant-uml-#{user}")
-        end
-
-        def su_copy(files)
-          commands = files.map { |file|
-            [
-              "rm -f #{file[:target]}",
-              "cp #{file[:source]} #{file[:target]}",
-              "chown root:root #{file[:target]}",
-              "chmod #{file[:mode]} #{file[:target]}"
-            ]
-          }.flatten
-          system "echo \"#{commands.join("; ")}\" | sudo sh"
         end
 
       end
