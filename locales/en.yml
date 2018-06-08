@@ -31,12 +31,14 @@ en:
       Sudoer file created
     sudoer_advise: |-
       Please copy the file %{sudoer_file} in the the sudoers.d directory as root using
-        "cp %{sudoer_file} /etc/sudoers.d"
-        "chown root:root /etc/sudoers.d/%{sudoer_file}"
-        "chmod 0640 /etc/sudoers.d/%{sudoer_file}"
+        cp %{sudoer_file} /etc/sudoers.d
+        chown root:root /etc/sudoers.d/%{sudoer_file}
+        chmod 0640 /etc/sudoers.d/%{sudoer_file}
       or run the following command as root:
-        vagrant uml-sudoers -c | bash
-
+        vagrant uml-sudoers -c -u %{user} | bash
+    not_sudoer: |-
+      You don't have the sudo rules that will allow to run a UML instance properly.
+      Please consider using `vagrant uml-sudoers -c -u %{user} | bash` as root to add those.
     config:
       create_args_array: |-
         create_args should be an array of strings
