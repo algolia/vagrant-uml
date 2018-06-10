@@ -10,4 +10,4 @@ before_script:
 
 script:
   - .travis/build_plugin.sh
-  - sudo .travis/test_uml_xenial.sh
+  - .travis/test_uml_xenial.sh
