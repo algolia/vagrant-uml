@@ -12,35 +12,40 @@ module VagrantPlugins
       # This action brings the machine up from nothing, including creating the
       # container, configuring metadata, and booting.
       def self.action_up
-        Builder.new.tap do |b|
-
-          b.use Builtin::Call, IsCreated do |env, b1|
-            if !env[:result]
-              b1.use Builtin::HandleBox
-            end
-          end
-
-          b.use HandleBoxMetadata
-          b.use Builtin::ConfigValidate
-          b.use Builtin::Call, IsCreated do |env, b1|
-            if env[:result]
-              b1.use Builtin::Call, IsStopped do |env2, b2|
-                if env2[:result]
-                  # Start an already created instance
-                  b2.use StartInstance
-                  b2.use Builtin::WaitForCommunicator, [:starting, :running]
-                  b2.use Builtin::Provision
-                else
-                  # Already created and running
-                  b2.use MessageAlreadyCreated
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use Builtin::Call, IsSudoer do |env1,b1|
+            if !env1[:result]
+              b1.use MessageNotSudoer
+            else
+              b1.use Builtin::Call, IsCreated do |env2, b2|
+                if !env2[:result]
+                  b2.use Builtin::HandleBox
                 end
               end
-            else
-              # Instance not created
-              b1.use Create
-              b1.use StartInstance
-              b1.use Builtin::WaitForCommunicator, [:starting, :running]
-              b1.use Builtin::Provision
+
+              b1.use HandleBoxMetadata
+              b1.use Builtin::ConfigValidate
+              b1.use Builtin::Call, IsCreated do |env3, b3|
+                if env3[:result]
+                  b3.use Builtin::Call, IsStopped do |env4, b4|
+                    if env4[:result]
+                      # Start an already created instance
+                      b4.use StartInstance
+                      b4.use Builtin::WaitForCommunicator, [:starting, :running]
+                      b4.use Builtin::Provision
+                    else
+                      # Already created and running
+                      b4.use MessageAlreadyCreated
+                    end
+                  end
+                else
+                  # Instance not created
+                  b3.use Create
+                  b3.use StartInstance
+                  b3.use Builtin::WaitForCommunicator, [:starting, :running]
+                  b3.use Builtin::Provision
+                end
+              end
             end
           end
         end
@@ -178,6 +183,8 @@ module VagrantPlugins
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
       autoload :GracefulHalt, action_root.join("graceful_halt")
       autoload :CleanInstanceNet, action_root.join("clean_instance_net")
+      autoload :IsSudoer, action_root.join("is_sudoer")
+      autoload :MessageNotSudoer, action_root.join("message_not_sudoer")
     end
   end
 end

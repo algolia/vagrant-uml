@@ -32,6 +32,11 @@ module VagrantPlugins
         Cap::UMLHalt
       end
 
+      command("uml-sudoers", primary: false) do
+        require_relative "command/sudoers"
+        Command::Sudoers
+      end
+
       provider(:uml) do
         # Setup i18n
         setup_i18n
