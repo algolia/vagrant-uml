@@ -2,7 +2,7 @@ require 'childprocess'
 require 'log4r'
 require 'tempfile'
 
-require "vagrant/util/retryable"
+require 'vagrant/util/retryable'
 require 'vagrant/util/which'
 
 
@@ -17,7 +17,7 @@ module VagrantPlugins
       end
 
       def initialize(*command)
-        @logger  = Log4r::Logger.new("vagrant::uml::process")
+        @logger  = Log4r::Logger.new('vagrant::uml::process')
         @options = command.last.is_a?(Hash) ? command.pop : {}
         @command = command.dup
         @logger.debug("Starting process with command: #{@command.inspect}")
@@ -25,7 +25,7 @@ module VagrantPlugins
         if !@command[0]
           raise Errors::CommandUnavailable, file: command[0]
         end
-        @command.join(" ")
+        @command.join(' ')
       end
 
       def run
@@ -104,7 +104,7 @@ module VagrantPlugins
       def raw(*command, &block)
         int_callback = lambda do
           @interrupted = true
-          @logger.info("Interrupted.")
+          @logger.info('Interrupted.')
         end
 
 ###### From vagrant Subprocess  #################
@@ -117,9 +117,9 @@ module VagrantPlugins
         process.detach ||= @options[:detach]
         process.cwd = workdir
         #process.io.stdout ||= @options[:stdout]
-        process.io.stdout ||= File.new("out.txt",File::CREAT|File::TRUNC|File::RDWR, 0640)
+        process.io.stdout ||= File.new('out.txt', File::CREAT|File::TRUNC|File::RDWR, 0640)
         #process.io.stderr ||= @options[:stderr]
-        process.io.stderr ||= File.new("err.txt",File::CREAT|File::TRUNC|File::RDWR, 0640)
+        process.io.stderr ||= File.new('err.txt', File::CREAT|File::TRUNC|File::RDWR, 0640)
 
 
         Vagrant::Util::Busy.busy(int_callback) do

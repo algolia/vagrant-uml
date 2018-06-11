@@ -1,5 +1,5 @@
-require "log4r"
-require "timeout"
+require 'log4r'
+require 'timeout'
 
 module VagrantPlugins
   module UML
@@ -22,7 +22,7 @@ module VagrantPlugins
         #   must be in to be shut down.
         def initialize(app, env, target_state, source_state=nil)
           @app          = app
-          @logger       = Log4r::Logger.new("vagrant::uml::action::graceful_halt")
+          @logger       = Log4r::Logger.new('vagrant::uml::action::graceful_halt')
           @source_state = source_state
           @target_state = target_state
         end
@@ -49,7 +49,7 @@ module VagrantPlugins
           # Only attempt to perform graceful shutdown under certain cases
           # checked above.
           if graceful
-            env[:ui].output(I18n.t("vagrant.actions.vm.halt.graceful"))
+            env[:ui].output(I18n.t('vagrant.actions.vm.halt.graceful'))
 
             begin
               # This is the only difference with the standard version
@@ -69,7 +69,7 @@ module VagrantPlugins
               # This happens if insert_public_key is called on a guest that
               # doesn't support it. This will block a destroy so we let it go.
             rescue Vagrant::Errors::MachineGuestNotReady
-              env[:ui].detail(I18n.t("vagrant.actions.vm.halt.guest_not_ready"))
+              env[:ui].detail(I18n.t('vagrant.actions.vm.halt.guest_not_ready'))
             end
 
             # The result of this matters on whether we reached our
@@ -77,9 +77,9 @@ module VagrantPlugins
             env[:result] = env[:machine].state.id == @target_state
 
             if env[:result]
-              @logger.info("Gracefully halted.")
+              @logger.info('Gracefully halted.')
             else
-              @logger.info("Graceful halt failed.")
+              @logger.info('Graceful halt failed.')
             end
           end
 

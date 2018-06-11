@@ -1,5 +1,5 @@
-require "pathname"
-require "vagrant/action/builder"
+require 'pathname'
+require 'vagrant/action/builder'
 
 module VagrantPlugins
   module UML
@@ -168,23 +168,23 @@ module VagrantPlugins
       end
 
       # The autoload farm
-      action_root = Pathname.new(File.expand_path("../action", __FILE__))
-      autoload :Create, action_root.join("create")
-      autoload :IsCreated, action_root.join("is_created")
-      autoload :IsStopped, action_root.join("is_stopped")
-      autoload :StartInstance, action_root.join("start_instance")
-      autoload :ForcedHalt, action_root.join("forced_halt")
-      autoload :Destroy, action_root.join("destroy")
-      autoload :HandleBoxMetadata, action_root.join("handle_box_metadata")
-      autoload :MessageAlreadyCreated, action_root.join("message_already_created")
-      autoload :MessageNotCreated, action_root.join("message_not_created")
-      autoload :MessageWillNotDestroy, action_root.join("message_will_not_destroy")
-      autoload :ReadState, action_root.join("read_state")
-      autoload :ReadSSHInfo, action_root.join("read_ssh_info")
-      autoload :GracefulHalt, action_root.join("graceful_halt")
-      autoload :CleanInstanceNet, action_root.join("clean_instance_net")
-      autoload :IsSudoer, action_root.join("is_sudoer")
-      autoload :MessageNotSudoer, action_root.join("message_not_sudoer")
+      action_root = Pathname.new(File.expand_path('../action', __FILE__))
+      autoload :Create, action_root.join('create')
+      autoload :IsCreated, action_root.join('is_created')
+      autoload :IsStopped, action_root.join('is_stopped')
+      autoload :StartInstance, action_root.join('start_instance')
+      autoload :ForcedHalt, action_root.join('forced_halt')
+      autoload :Destroy, action_root.join('destroy')
+      autoload :HandleBoxMetadata, action_root.join('handle_box_metadata')
+      autoload :MessageAlreadyCreated, action_root.join('message_already_created')
+      autoload :MessageNotCreated, action_root.join('message_not_created')
+      autoload :MessageWillNotDestroy, action_root.join('message_will_not_destroy')
+      autoload :ReadState, action_root.join('read_state')
+      autoload :ReadSSHInfo, action_root.join('read_ssh_info')
+      autoload :GracefulHalt, action_root.join('graceful_halt')
+      autoload :CleanInstanceNet, action_root.join('clean_instance_net')
+      autoload :IsSudoer, action_root.join('is_sudoer')
+      autoload :MessageNotSudoer, action_root.join('message_not_sudoer')
     end
   end
 end

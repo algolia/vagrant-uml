@@ -7,7 +7,7 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:ui].info (I18n.t("vagrant_uml.not_created"))
+          env[:ui].info (I18n.t('vagrant_uml.not_created'))
           @app.call(env)
         end
       end

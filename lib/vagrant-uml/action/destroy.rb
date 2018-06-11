@@ -7,7 +7,7 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:ui].info I18n.t("vagrant.actions.vm.destroy.destroying")
+          env[:ui].info I18n.t('vagrant.actions.vm.destroy.destroying')
 
           # Delete the COW file created by the UML instance if it exists
           cow_file = env[:machine].data_dir.join('cow')

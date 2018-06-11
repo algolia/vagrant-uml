@@ -1,4 +1,4 @@
-require "log4r"
+require 'log4r'
 module VagrantPlugins
   module UML
     module Action
@@ -7,19 +7,19 @@ module VagrantPlugins
 
         def initialize(app, env)
           @app    = app
-          @logger = Log4r::Logger.new("vagrant::uml::action::handle_box_metadata")
+          @logger = Log4r::Logger.new('vagrant::uml::action::handle_box_metadata')
         end
 
         def call(env)
           @env = env
           @box = @env[:machine].box
 
-          @env[:ui].info (I18n.t("vagrant.actions.vm.import.importing", :name => @env[:machine].box.name))
+          @env[:ui].info (I18n.t('vagrant.actions.vm.import.importing', :name => @env[:machine].box.name))
 
-          @logger.info (I18n.t("vagrant_uml.validating_box"))
+          @logger.info (I18n.t('vagrant_uml.validating_box'))
           validate_box
 
-          @logger.info (I18n.t("vagrant_uml.setting_box"))
+          @logger.info (I18n.t('vagrant_uml.setting_box'))
           @env[:uml_kernel_bin]  = kernel_bin
           @env[:uml_rootfs] = rootfs_archive
 
@@ -29,7 +29,7 @@ module VagrantPlugins
         def kernel_bin
           begin
             if (kernel_ver = @box.metadata.fetch('kernel_version').to_s)
-              @kernel_bin ||= (box_template = @box.directory.join('linux-'+kernel_ver)).to_s
+              @kernel_bin ||= (box_template = @box.directory.join("linux-#{kernel_ver}")).to_s
             end
             rescue
           end

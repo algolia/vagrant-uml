@@ -1,5 +1,5 @@
-require "log4r"
-require "vagrant-uml/cli"
+require 'log4r'
+require 'vagrant-uml/cli'
 
 module VagrantPlugins
   module UML 
@@ -10,7 +10,7 @@ module VagrantPlugins
         def initialize(app, env)
           @app    = app 
           @cli    = CLI.new(env[:machine].name)
-          @logger = Log4r::Logger.new("vagrant::uml::action::read_state")
+          @logger = Log4r::Logger.new('vagrant::uml::action::read_state')
         end
 
         def call(env)
