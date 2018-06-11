@@ -37,7 +37,7 @@ module VagrantPlugins
           end
 
           env[:ui].info (I18n.t('vagrant_uml.copying'))
-          FileUtils.cp_r("#{env[:machine].box.directory.to_s}/metadata.json" data_dir)
+          FileUtils.cp_r("#{env[:machine].box.directory.to_s}/metadata.json", data_dir)
           FileUtils.ln_s(env[:uml_kernel_bin], "#{data_dir.to_s}/run")
 
           # Generate a random id for this machine
