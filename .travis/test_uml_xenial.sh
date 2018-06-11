@@ -5,15 +5,16 @@ set -e
 UML_VERSION=$(ruby -I ./lib -e "require 'vagrant-uml/version.rb' ; p VagrantPlugins::UML::VERSION" | tr  -d '"')
 BOX_VERSION=0.0.2
 
-echo "Installing vagrant plugin"
+echo "Install vagrant plugin"
 vagrant plugin install ./pkg/vagrant-uml-${UML_VERSION}.gem
 
-echo "Getting Vagrant UML box"
+echo "Get Vagrant UML box (v${BOX_VERSION}"
 vagrant box add https://alg-archistore.s3.amazonaws.com/public/infra/vagrant/uml/xenial64/box_metadata-${BOX_VERSION}.json
 
-echo "Try the UML instance"
 mkdir /tmp/instance
 pushd /tmp/instance
+
+echo "Init the UML instance"
 vagrant init algolia/uml/xenial64
 
 # Ensure the boot process will not report an error
@@ -29,8 +30,16 @@ Vagrant.configure("2") do |config|
 end
 EOF
 
+echo "Display sudo rules"
+vagrant uml-sudoers -c
+
+echo "Start the UML instance"
 vagrant up --provider=uml
+
+echo "Try vagrant ssh -c"
 vagrant ssh -c 'uname -a' | grep -q '^Linux'
+
+echo "Stop the UML instance"
 vagrant halt
 popd
 

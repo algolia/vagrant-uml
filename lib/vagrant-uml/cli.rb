@@ -20,6 +20,30 @@ module VagrantPlugins
         @logger = Log4r::Logger.new("vagrant::uml::cli")
       end
 
+      def is_full_sudo_allowed
+        # Check that the user is "full" sudoer
+        res = Vagrant::Util::Subprocess.execute("sudo", "-l")
+        return true if res.stdout =~ /[[:blank:]]*\(ALL\) NOPASSWD: ALL/
+        false
+      end  
+
+      def is_sudo_allowed
+        # Lets figure out if the user already added the sudo rules generated from `vagrant uml-sudoer`
+        user = ENV['USER']
+        regex = <<~REGEX
+          \s+\\\(root\\\) NOPASSWD: \/usr\/sbin\/tunctl -u vagrant -t uml-\\\[a-zA-Z0-9\\\]\\\+
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/sysctl -w net\.ipv4.ip_forward\\\\=1
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/ifconfig uml-\\\[a-zA-Z0-9\\\]\\\+ \\\[0-9.\\\]\\\+\/30 up
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -t nat -A POSTROUTING -s \\\[0-9\\\.\\\]\\\+ -o \\\[a-zA-Z0-9\\\-\\\.\\\]\\\+ -m comment --comment uml-\\\[a-zA-Z0-9\\\]\\\+ -j MASQUERADE
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -t nat -L POSTROUTING --line-numbers -n
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -t nat -D POSTROUTING \\\[0-9\\\]\\\+
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/ip link delete uml-\\\[a-zA-Z0-9\\\]\\\+
+        REGEX
+        res = Vagrant::Util::Subprocess.execute("sudo", "-l")
+        return true if res.stdout =~ /#{regex}/
+        false
+      end  
+
 
       # This is meant to ensure that the mconsole socket for an instance 
       # exists as UML takes 1 or seconds to create it after starting
@@ -183,13 +207,13 @@ EOS
         guest_ip = IPAddr.new("#{options[:host_ip]}").succ.to_s
 
         # Create the tuntap device and check it worked
-        res = Vagrant::Util::Subprocess.execute(@tunctl_path, "-t", options[:name], retryable: true)
-        res.stdout =~ /Set '(.+?)' persistent and owned by uid (.+?)/
+        res = Vagrant::Util::Subprocess.execute("sudo", @tunctl_path, "-u", ENV['USER'], "-t", "uml-#{options[:name]}", retryable: true)
+        res.stdout =~ /Set 'uml-(.+?)' persistent and owned by uid (.+?)/
         if $1.to_s != options[:name]
           raise "TUN/TAP interface name mismatch !"
         end
         # Set the ip address of the tuntap device on host side
-        Vagrant::Util::Subprocess.execute("ifconfig", options[:name], options[:host_ip]+"/30", "up", retryable: true)
+        Vagrant::Util::Subprocess.execute("sudo", "ifconfig", "uml-#{options[:name]}", options[:host_ip]+"/30", "up", retryable: true)
 
         # get the default gateway interface (we'll apply some nat rules on it later)
         res = Vagrant::Util::Subprocess.execute("ip", "-4", "route", "list", "match", "0.0.0.0", retryable: true)
@@ -197,23 +221,23 @@ EOS
         default_interface = $2.to_s
  
         # allow ip forwarding to ensure the guest will have access to outside world
-        Vagrant::Util::Subprocess.execute("sysctl", "-w", "net.ipv4.ip_forward=1", retryable: true)
+        Vagrant::Util::Subprocess.execute("sudo", "sysctl", "-w", "net.ipv4.ip_forward=1", retryable: true)
 
         # Create a MASQUERADING rule for the guest to be able to reach the rest of the world using the host as NAT gateway
         # Use the comment iptable match to ensure a rule belongs to a specific instance
-        Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", guest_ip, "-o", default_interface, "-m", "comment", "--comment", options[:name], "-j", "MASQUERADE" ,retryable: true)
+        Vagrant::Util::Subprocess.execute("sudo", "iptables", "-t", "nat", "-A" , "POSTROUTING", "-s", guest_ip, "-o", default_interface, "-m", "comment", "--comment", options[:name], "-j", "MASQUERADE" ,retryable: true)
       end
 
       def destroy_standalone_net(id)
         # Clean the MASQUERADE rule created for this instance id, it has tagged in its comment with the id
         # List all existing NAT POSTROUTING rules and parse
-        res = Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-L", "POSTROUTING", "--line-numbers", "-n", retryable: true)
+        res = Vagrant::Util::Subprocess.execute("sudo", "iptables", "-t", "nat", "-L", "POSTROUTING", "--line-numbers", "-n", retryable: true)
         res.stdout =~ /([0-9]+)\s+MASQUERADE\s+all\s+--\s+[0-9.]+\s+0\.0\.0\.0\/0\s+\/\*\s+#{id}\s+\*\//
         rule_number = $1.to_s
         # Clean it based on its rule number (if it exists)
-        Vagrant::Util::Subprocess.execute("iptables", "-t", "nat", "-D", "POSTROUTING", rule_number, retryable: true) if rule_number && rule_number.length > 0
+        Vagrant::Util::Subprocess.execute("sudo", "iptables", "-t", "nat", "-D", "POSTROUTING", rule_number, retryable: true) if rule_number && rule_number.length > 0
         # Now deletes the tuntap device
-        Vagrant::Util::Subprocess.execute("ip", "link", "delete", id, retryable: true)
+        Vagrant::Util::Subprocess.execute("sudo", "ip", "link", "delete", "uml-#{id}", retryable: true)
       end
         
     end

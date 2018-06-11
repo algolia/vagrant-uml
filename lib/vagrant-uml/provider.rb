@@ -30,6 +30,12 @@ module VagrantPlugins
         if !Vagrant::Util::Which.which("mkfs.vfat")
           raise Vagrant::Errors::CommandUnavailable, file: "mkfs.vfat"
         end
+        if !Vagrant::Util::Which.which("sudo")
+          raise Vagrant::Errors::CommandUnavailable, file: "sudo"
+        end
+        if !Vagrant::Util::Which.which("iptables")
+          raise Vagrant::Errors::CommandUnavailable, file: "iptables"
+        end
 
         @machine = machine
       end
