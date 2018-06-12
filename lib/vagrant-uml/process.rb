@@ -60,7 +60,7 @@ module VagrantPlugins
         # Variable to store our execution result
         r = nil
 
-        retryable(:on => UML::Errors::ExecuteError, :tries => tries, :sleep => sleep) do
+        retryable(on: UML::Errors::ExecuteError, tries: tries, sleep: sleep) do
           # Execute the command
           r = raw(*command, &block)
 

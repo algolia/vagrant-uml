@@ -14,7 +14,7 @@ module VagrantPlugins
           @env = env
           @box = @env[:machine].box
 
-          @env[:ui].info(I18n.t('vagrant.actions.vm.import.importing', :name => @env[:machine].box.name))
+          @env[:ui].info(I18n.t('vagrant.actions.vm.import.importing', name: @env[:machine].box.name))
 
           @logger.info(I18n.t('vagrant_uml.validating_box'))
           validate_box

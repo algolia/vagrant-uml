@@ -23,7 +23,7 @@ module VagrantPlugins
           host_ip_file = machine.data_dir.join('host_ip_address')
           host_ip = host_ip_file.read.chomp if host_ip_file.file?
           guest_ip = IPAddr.new(host_ip).succ.to_s
-          @env[:machine_ssh_info] = { :host => guest_ip, :port => 22 }
+          @env[:machine_ssh_info] = { host: guest_ip, port: 22 }
           @logger.debug("machine_ssh_info is: #{@env[:machine_ssh_info]}")
           return @env[:machine_ssh_info]
         end

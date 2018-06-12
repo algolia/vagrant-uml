@@ -70,7 +70,12 @@ module VagrantPlugins
           end
 
           # Create a cloud-init seed image
-          @cli.create_cidata(:root_path => env[:machine].env.root_path.to_s, :machine_id => env[:machine].id, :name => env[:machine].name, :mac => env[:machine].provider_config.mac, :data_dir => data_dir.to_s, :host_ip => host_ip)
+          @cli.create_cidata(root_path: env[:machine].env.root_path.to_s,
+            machine_id: env[:machine].id,
+            name: env[:machine].name,
+            mac: env[:machine].provider_config.mac,
+            data_dir: data_dir.to_s,
+            host_ip: host_ip)
 
           # Store the host ip associated with this instance in the global machine index
           #  this is the same job as eralier writing in a file but we can't use this info
