@@ -49,7 +49,7 @@ module VagrantPlugins
 
       # TODO: Review code below this line, it was pretty much a copy and
       #       paste from VirtualBox base driver and has no tests
-      def execute(*command, &block)
+      def execute(*command)
         tries = 0
         tries = 3 if @options[:retryable] && !@options[:detach]
 
@@ -59,7 +59,7 @@ module VagrantPlugins
         r = nil
         retryable(on: UML::Errors::ExecuteError, tries: tries, sleep: sleep) do
           # Execute the command
-          r = raw(*command, &block)
+          r = raw
 
           # If the command was a failure, then raise an exception that is
           # nicely handled by Vagrant.
@@ -78,7 +78,7 @@ module VagrantPlugins
         return r
       end
 
-      def raw(*command, &block)
+      def raw
         int_callback = lambda do
           @interrupted = true
           @logger.info('Interrupted.')
