@@ -58,7 +58,7 @@ module VagrantPlugins
         state_id = env[:machine_state_id]
         state_id = :unknown if !state_id
 
-        short = state_id.to_s.gsub('_', ' ')
+        short = state_id.to_s.tr('_', ' ')
         long  = I18n.t("vagrant.commands.status.#{state_id}")
 
         # Return the MachineState object
