@@ -4,7 +4,6 @@ rescue LoadError
   raise 'The Vagrant UML plugin must be run within Vagrant.'
 end
 
-
 module VagrantPlugins
   module UML
     class Plugin < Vagrant.plugin('2')
@@ -51,7 +50,6 @@ module VagrantPlugins
         I18n.load_path << File.expand_path('locales/en.yml', UML.source_root)
         I18n.reload!
       end
-
     end
   end
 end

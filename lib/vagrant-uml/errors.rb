@@ -24,7 +24,6 @@ module VagrantPlugins
         end
       end
 
-
       class LinuxRequired < Vagrant::Errors::VagrantError
         error_key(:uml_linux_required)
       end

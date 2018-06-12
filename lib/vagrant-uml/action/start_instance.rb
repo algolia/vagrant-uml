@@ -5,7 +5,6 @@ module VagrantPlugins
   module UML
     module Action
       class StartInstance
-
          # Run a UML instance using a cow file, a tuntap ethernet adapter. 
 
         def initialize(app, env)

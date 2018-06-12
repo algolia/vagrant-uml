@@ -2,7 +2,6 @@ module VagrantPlugins
   module UML
     module Cap
       module NicMacAddress
-
         # Reads the network interface card MAC addresses and returns them.
         #   
         # @return [Hash<String, String>] Adapter => MAC address

@@ -1,11 +1,9 @@
 require 'tempfile'
 
-
 module VagrantPlugins
   module UML
     module Command
       class Sudoers < Vagrant.plugin('2', :command)
-
         def self.synopsis
           'Create a sudoers file to allow a non privileged users to run UML instances'
         end
@@ -17,7 +15,6 @@ module VagrantPlugins
           I18n.load_path << File.expand_path('locales/en.yml', VagrantPlugins::UML.source_root)
           I18n.reload!
         end
-
 
         def execute
           options = { user: ENV['USER'] }
@@ -31,7 +28,6 @@ module VagrantPlugins
             opts.on('-c', '--stdout', 'create an output suitable to pipe to bash or sudo bash') do |c|
               options[:stdout] = c
             end
-
           end
 
           argv = parse_options(opts)
@@ -45,7 +41,6 @@ module VagrantPlugins
               :sudoer_file => File.expand_path("./vagrant-uml-#{options[:user]}")))
           end
         end
-
 
         private
 
@@ -83,7 +78,6 @@ module VagrantPlugins
             FileUtils.cp(sudoers.path, "./vagrant-uml-#{user}")
           end
         end
-
       end
     end
   end

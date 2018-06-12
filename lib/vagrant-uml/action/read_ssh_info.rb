@@ -27,7 +27,6 @@ module VagrantPlugins
           @logger.debug("machine_ssh_info is: #{@env[:machine_ssh_info]}")
           return @env[:machine_ssh_info]
         end
-
       end
     end
   end

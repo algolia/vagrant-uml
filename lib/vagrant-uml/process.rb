@@ -1,10 +1,8 @@
 require 'childprocess'
 require 'log4r'
 require 'tempfile'
-
 require 'vagrant/util/retryable'
 require 'vagrant/util/which'
-
 
 module VagrantPlugins
   module UML
@@ -49,12 +47,11 @@ module VagrantPlugins
         end
       end
 
-
       private
+
       # TODO: Review code below this line, it was pretty much a copy and
       #       paste from VirtualBox base driver and has no tests
       def execute(*command, &block)
-
         tries = 0
         tries = 3 if @options[:retryable]
         # Ensure detachable process are ,not retryable
@@ -69,11 +66,11 @@ module VagrantPlugins
           # Execute the command
           r = raw(*command, &block)
 
-################################################################################
-## Need to change this as the uml_console XXXX version return 1 when the machine
-## does not exists (need to rely on something to get the status)
-##  the best way would be to add a "status" command to uml_console to know is the
-##  machine exists, is frozen , ...
+          ################################################################################
+          ## Need to change this as the uml_console XXXX version return 1 when the machine
+          ## does not exists (need to rely on something to get the status)
+          ##  the best way would be to add a "status" command to uml_console to know is the
+          ##  machine exists, is frozen , ...
           # If the command was a failure, then raise an exception that is
           # nicely handled by Vagrant.
           if r.exit_code != 0 && r.exited? && !@options[:detach]
@@ -84,21 +81,21 @@ module VagrantPlugins
                 command: command.inspect, stderr: r.io.stderr, stdout: r.io.stdout, exitcode: r.exit_code
             end
           end
-###################################################################################
+          ###################################################################################
         end
 
-################################################################################
-## We probably dont care about this as UML is only running on Linux hosts !
+        ################################################################################
+        ## We probably dont care about this as UML is only running on Linux hosts !
         # Return the output, making sure to replace any Windows-style
         # newlines with Unix-style.
-#        stdout = r.stdout.gsub("\r\n", "\n")
-#        if options[:show_stderr]
-#          { :stdout => stdout, :stderr => r.stderr.gsub("\r\n", "\n") }
-#        else
-#          stdout
-#        end
-###################################################################################
-      return r
+        #        stdout = r.stdout.gsub("\r\n", "\n")
+        #        if options[:show_stderr]
+        #          { :stdout => stdout, :stderr => r.stderr.gsub("\r\n", "\n") }
+        #        else
+        #          stdout
+        #        end
+        ###################################################################################
+        return r
       end
 
       def raw(*command, &block)
@@ -121,7 +118,6 @@ module VagrantPlugins
         #process.io.stderr ||= @options[:stderr]
         process.io.stderr ||= File.new('err.txt', File::CREAT|File::TRUNC|File::RDWR, 0640)
 
-
         Vagrant::Util::Busy.busy(int_callback) do
           @logger.debug("Starting process: #{@command.inspect}")
           process.start
@@ -129,7 +125,6 @@ module VagrantPlugins
         end
         return process
       end
-
     end
   end
 end  

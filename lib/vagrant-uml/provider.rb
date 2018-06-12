@@ -6,9 +6,7 @@ require 'vagrant-uml/errors'
 module VagrantPlugins
   module UML
     class Provider < Vagrant.plugin('2', :provider)
-
       def initialize(machine)
-
         @logger  = Log4r::Logger.new('vagrant::provider::uml')
         # Just check if we're running on a linux host
         if !Vagrant::Util::Platform.linux?
@@ -71,8 +69,6 @@ module VagrantPlugins
         id = @machine.id.nil? ? 'new' : @machine.id
         "UML (#{id})"
       end 
-
-
     end
   end
 end

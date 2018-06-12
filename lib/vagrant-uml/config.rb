@@ -1,4 +1,3 @@
-
 module VagrantPlugins
   module UML
     class Config < Vagrant.plugin('2', :config)
@@ -36,7 +35,6 @@ module VagrantPlugins
         @cpus            = UNSET_VALUE
       end
 
-
       # Finalize configurtion parameters
       # I choose 512m of RAM and 1 cpu as default
       def finalize!
@@ -55,7 +53,6 @@ module VagrantPlugins
         end
         { 'uml provider' => errors }
       end
-
     end
   end
 end

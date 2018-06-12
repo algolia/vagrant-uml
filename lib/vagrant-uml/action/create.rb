@@ -2,7 +2,6 @@ module VagrantPlugins
   module UML
     module Action
       class Create
-
         def initialize(app, env)
           @app = app
           @cli = CLI.new(env[:machine].name)
@@ -69,7 +68,6 @@ module VagrantPlugins
           host_ip_file.open('w') do |f|
             f.write(host_ip)
           end
-
 
           # Create a cloud-init seed image
           @cli.create_cidata(:root_path => env[:machine].env.root_path.to_s, :machine_id => env[:machine].id, :name => env[:machine].name, :mac => env[:machine].provider_config.mac, :data_dir => data_dir.to_s, :host_ip => host_ip)
