@@ -10,7 +10,7 @@ module VagrantPlugins
         @logger  = Log4r::Logger.new('vagrant::provider::uml')
         # Just check if we're running on a linux host
         if !Vagrant::Util::Platform.linux?
-          @logger.info (I18n.t('vagrant_uml.errors.wrong_os'))
+          @logger.info(I18n.t('vagrant_uml.errors.wrong_os'))
           raise UML::Errors::LinuxRequired
         end
         if !Vagrant::Util::Which.which('tunctl')

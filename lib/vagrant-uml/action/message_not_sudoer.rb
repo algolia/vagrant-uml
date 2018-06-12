@@ -7,7 +7,7 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:ui].error (I18n.t('vagrant_uml.not_sudoer', :user => ENV['USER']))
+          env[:ui].error(I18n.t('vagrant_uml.not_sudoer', :user => ENV['USER']))
           @app.call(env)
         end
       end

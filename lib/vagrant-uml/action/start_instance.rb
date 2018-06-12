@@ -13,7 +13,7 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:ui].info (I18n.t('vagrant_uml.starting'))
+          env[:ui].info(I18n.t('vagrant_uml.starting'))
           env[:machine].provider.capability(:nic_mac_address)
 
           # The host_ip has been defined at instance creation and stored as an extra_data in its
@@ -50,7 +50,7 @@ module VagrantPlugins
             # Execution error, we were not able to start the UML instance
             raise UML::Errors::StartError, exitcode: e.exitcode
           end
-          env[:ui].success (I18n.t('vagrant_uml.started'))
+          env[:ui].success(I18n.t('vagrant_uml.started'))
           @app.call(env)
         end
       end
