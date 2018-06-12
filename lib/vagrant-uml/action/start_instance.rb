@@ -24,7 +24,7 @@ module VagrantPlugins
           env[:machine].env.machine_index.release(entry)
 
           # create the network ressource needed by the machine before starting it
-          @cli.create_standalone_net(:name => env[:machine].id,:host_ip => host_ip)
+          @cli.create_standalone_net(:name => env[:machine].id, :host_ip => host_ip)
           begin
             # Let's run the UML kernel with all the needed arguments
             # see http://user-mode-linux.sourceforge.net/old/switches.html

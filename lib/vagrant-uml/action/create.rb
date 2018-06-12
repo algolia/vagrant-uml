@@ -40,7 +40,7 @@ module VagrantPlugins
           FileUtils.ln_s(env[:uml_kernel_bin], "#{data_dir.to_s}/run")
 
           # Generate a random id for this machine
-          env[:machine].id = [*('a'..'z'),*('0'..'9')].shuffle[0,10].join.to_s
+          env[:machine].id = [*('a'..'z'), *('0'..'9')].shuffle[0, 10].join.to_s
 
           # Create an array to store all uml existing ip address to ease lookup
           existing_ips = []

@@ -69,7 +69,7 @@ module VagrantPlugins
             )
 
           if to_stdout
-            puts template.render.gsub(/^/,'echo \'').gsub(/$/,"\' >> /etc/sudoers.d/vagrant-uml-#{user}").gsub(/^\'.*/,'')
+            puts template.render.gsub(/^/, 'echo \'').gsub(/$/, "\' >> /etc/sudoers.d/vagrant-uml-#{user}").gsub(/^\'.*/, '')
           else
             sudoers = Tempfile.new('vagrant-uml-sudoers').tap do |file|
               file.puts template.render
