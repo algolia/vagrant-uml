@@ -5,7 +5,7 @@ module VagrantPlugins
   module UML
     module Action
       class StartInstance
-         # Run a UML instance using a cow file, a tuntap ethernet adapter. 
+         # Run a UML instance using a cow file, a tuntap ethernet adapter.
 
         def initialize(app, env)
           @cli = CLI.new(env[:machine].name)
@@ -27,7 +27,7 @@ module VagrantPlugins
           @cli.create_standalone_net(:name => env[:machine].id,:host_ip => host_ip)
           begin
             # Let's run the UML kernel with all the needed arguments
-            # see http://user-mode-linux.sourceforge.net/old/switches.html 
+            # see http://user-mode-linux.sourceforge.net/old/switches.html
             #  for the UML kernel command line switches
             @cli.run_uml( "#{env[:machine].data_dir.to_s}/run",
               :data_dir => env[:machine].data_dir.to_s,

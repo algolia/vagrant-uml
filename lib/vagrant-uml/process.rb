@@ -127,4 +127,4 @@ module VagrantPlugins
       end
     end
   end
-end  
+end

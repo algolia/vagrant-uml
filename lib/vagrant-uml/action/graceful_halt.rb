@@ -5,7 +5,7 @@ module VagrantPlugins
   module UML
     module Action
       # Re-implement the standard GraceFulHalt to use a custom guest capability that
-      #  exits properly and do not stuck indefinitly the Net::SSH channel in the 
+      #  exits properly and do not stuck indefinitly the Net::SSH channel in the
       #  communicator/ssh
 
       # This middleware class will attempt to perform a graceful shutdown

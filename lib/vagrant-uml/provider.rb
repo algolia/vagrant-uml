@@ -68,7 +68,7 @@ module VagrantPlugins
       def to_s
         id = @machine.id.nil? ? 'new' : @machine.id
         "UML (#{id})"
-      end 
+      end
     end
   end
 end

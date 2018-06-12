@@ -18,14 +18,14 @@ module VagrantPlugins
         Config
       end
 
-      # Capability that reads the mac address from the file generated at instance creation 
+      # Capability that reads the mac address from the file generated at instance creation
       provider_capability(:uml, :nic_mac_address) do
         require_relative 'cap/nic_mac_address'
         Cap::NicMacAddress
-      end 
+      end
 
       # This is a re-writen halt (shutdown) guest capability
-      #  that provides a workaround for stucked Net:SSH channels 
+      #  that provides a workaround for stucked Net:SSH channels
       guest_capability(:linux, :uml_halt) do
         require_relative 'cap/uml_halt'
         Cap::UMLHalt
