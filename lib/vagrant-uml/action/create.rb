@@ -19,7 +19,7 @@ module VagrantPlugins
           # Set the locally administered bit
           mac_octets[0] |= 0x02
           # Ensure this is not a multicast mac address by setting the LSB to 0
-          mac_octets[0] -=1 if mac_octets[0].odd?
+          mac_octets[0] -= 1 if mac_octets[0].odd?
           mac = mac_octets.collect { |i| format % [i] }.join(delimiter)
           mac.to_s
         end
@@ -51,17 +51,17 @@ module VagrantPlugins
           end
           # Check existing uml instance for ip address
 	  #  and get the samllest unused octet int the network range
-          smallest=0
+          smallest = 0
           # as we're using /30 subnets for tuntap, go 4 by 4
           (1..253).step(4).to_a.each do |last_oct|
-            unless  existing_ips.include? "10.0.113.#{last_oct}"
-              smallest=last_oct
+            unless existing_ips.include? "10.0.113.#{last_oct}"
+              smallest = last_oct
               break
             end
           end
 
-          raise 'Network range (10.0.113.0) exhaustion' if smallest==0
-          host_ip="10.0.113.#{smallest}"
+          raise 'Network range (10.0.113.0) exhaustion' if smallest == 0
+          host_ip = "10.0.113.#{smallest}"
 
           # Write the computed host ip address in a file
           host_ip_file = data_dir.join('host_ip_address')

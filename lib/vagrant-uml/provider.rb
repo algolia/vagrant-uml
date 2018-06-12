@@ -7,7 +7,7 @@ module VagrantPlugins
   module UML
     class Provider < Vagrant.plugin('2', :provider)
       def initialize(machine)
-        @logger  = Log4r::Logger.new('vagrant::provider::uml')
+        @logger = Log4r::Logger.new('vagrant::provider::uml')
         # Just check if we're running on a linux host
         unless Vagrant::Util::Platform.linux?
           @logger.info(I18n.t('vagrant_uml.errors.wrong_os'))

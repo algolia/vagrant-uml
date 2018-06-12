@@ -3,7 +3,7 @@ module VagrantPlugins
   module UML
     module Action
       class HandleBoxMetadata
-        SUPPORTED_VERSIONS  = ['0.0.1', '0.0.2']
+        SUPPORTED_VERSIONS = ['0.0.1', '0.0.2']
 
         def initialize(app, env)
           @app    = app
@@ -20,7 +20,7 @@ module VagrantPlugins
           validate_box
 
           @logger.info(I18n.t('vagrant_uml.setting_box'))
-          @env[:uml_kernel_bin]  = kernel_bin
+          @env[:uml_kernel_bin] = kernel_bin
           @env[:uml_rootfs] = rootfs_archive
 
           @app.call env
@@ -38,7 +38,7 @@ module VagrantPlugins
 
         def template_opts
           @template_opts ||= @box.metadata.fetch('rootfs', {}).dup.merge!(
-            'rootfs'  => rootfs_archive
+            'rootfs' => rootfs_archive
           )
         end
 

@@ -5,7 +5,7 @@ module VagrantPlugins
       # This stops the running instance using mconsole halt (ie kill the instance).
       class ForcedHalt
         def initialize(app, env)
-          @app    = app
+          @app = app
           @cli = CLI.new(env[:machine].name)
         end
 

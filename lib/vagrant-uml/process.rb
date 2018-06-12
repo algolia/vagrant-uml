@@ -112,9 +112,9 @@ module VagrantPlugins
         process.detach ||= @options[:detach]
         process.cwd = workdir
         #process.io.stdout ||= @options[:stdout]
-        process.io.stdout ||= File.new('out.txt', File::CREAT|File::TRUNC|File::RDWR, 0640)
+        process.io.stdout ||= File.new('out.txt', File::CREAT | File::TRUNC | File::RDWR, 0640)
         #process.io.stderr ||= @options[:stderr]
-        process.io.stderr ||= File.new('err.txt', File::CREAT|File::TRUNC|File::RDWR, 0640)
+        process.io.stderr ||= File.new('err.txt', File::CREAT | File::TRUNC | File::RDWR, 0640)
 
         Vagrant::Util::Busy.busy(int_callback) do
           @logger.debug("Starting process: #{@command.inspect}")
