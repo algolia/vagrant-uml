@@ -17,9 +17,7 @@ module VagrantPlugins
               b1.use MessageNotSudoer
             else
               b1.use Builtin::Call, IsCreated do |env2, b2|
-                if !env2[:result]
-                  b2.use Builtin::HandleBox
-                end
+                b2.use Builtin::HandleBox unless env2[:result]
               end
 
               b1.use HandleBoxMetadata
@@ -60,9 +58,7 @@ module VagrantPlugins
                next
             else
               b2.use Builtin::Call, GracefulHalt, :poweroff, :running do |env2, b3|
-                if !env2[:result]
-                  b3.use ForcedHalt
-                end
+                b3.use ForcedHalt unless env2[:result]
                 b3.use CleanInstanceNet
               end
             end
@@ -77,7 +73,7 @@ module VagrantPlugins
             if env[:result]
               b2.use Builtin::ConfigValidate
               b2.use Builtin::Call, IsCreated do |env2, b3|
-                if !env2[:result]
+                unless env2[:result]
                   b3.use MessageNotCreated
                   next
                 end
@@ -106,14 +102,12 @@ module VagrantPlugins
       def self.action_ssh
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::Call, IsCreated do |env, b2|
-            if !env[:result]
+            unless env[:result]
               b2.use MessageNotCreated
               next
             end
             b2.use Builtin::Call, IsStopped do |env2, b3|
-              if !env2[:result]
-                b3.use Builtin::SSHExec
-              end
+              b3.use Builtin::SSHExec unless env2[:result]
             end
           end
         end
@@ -123,14 +117,12 @@ module VagrantPlugins
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::Call, IsCreated do |env, b2|
-            if !env[:result]
+            unless env[:result]
               b2.use MessageNotCreated
               next
             end
             b2.use Builtin::Call, IsStopped do |env2, b3|
-              if !env2[:result]
-                b3.use Builtin::SSHRun
-              end
+              b3.use Builtin::SSHRun unless env2[:result]
             end
           end
         end
@@ -141,7 +133,7 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use Builtin::ConfigValidate
           b.use Builtin::Call, IsCreated do |env, b2|
-            if !env[:result]
+            unless env[:result]
               b2.use MessageNotCreated
               next
             end

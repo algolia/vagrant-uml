@@ -12,9 +12,7 @@ module VagrantPlugins
 
         def call(env)
           env[:result] = @cli.is_full_sudo_allowed
-          if !env[:result]
-            env[:result] = @cli.is_sudo_allowed
-          end
+          env[:result] = @cli.is_sudo_allowed unless env2[:result]
           @app.call(env)
         end
       end

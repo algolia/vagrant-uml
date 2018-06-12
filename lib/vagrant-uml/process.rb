@@ -19,10 +19,8 @@ module VagrantPlugins
         @options = command.last.is_a?(Hash) ? command.pop : {}
         @command = command.dup
         @logger.debug("Starting process with command: #{@command.inspect}")
-        @command[0] = Which.which(@command[0]) if !File.file?(@command[0])
-        if !@command[0]
-          raise Errors::CommandUnavailable, file: command[0]
-        end
+        @command[0] = Which.which(@command[0]) unless File.file?(@command[0])
+        raise Errors::CommandUnavailable, file: command[0] unless @command[0]
         @command.join(' ')
       end
 

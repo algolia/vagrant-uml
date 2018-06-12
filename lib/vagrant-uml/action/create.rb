@@ -54,7 +54,7 @@ module VagrantPlugins
           smallest=0
           # as we're using /30 subnets for tuntap, go 4 by 4
           (1..253).step(4).to_a.each do |last_oct|
-            if ! existing_ips.include? "10.0.113.#{last_oct}"
+            unless  existing_ips.include? "10.0.113.#{last_oct}"
               smallest=last_oct
               break
             end
