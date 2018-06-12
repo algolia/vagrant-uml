@@ -46,7 +46,7 @@ module VagrantPlugins
       end
 
       # Basic config parameters validation
-      def validate(machine)
+      def validate(_machine)
         errors = _detected_errors
         unless @create_args.is_a?(Array)
           errors << I18n.t('vagrant_uml.errors.config.create_args_array')

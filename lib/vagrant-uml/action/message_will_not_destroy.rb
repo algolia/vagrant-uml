@@ -2,7 +2,7 @@ module VagrantPlugins
   module UML
     module Action
       class MessageWillNotDestroy
-        def initialize(app, env)
+        def initialize(app, _env)
           @app = app
         end
 

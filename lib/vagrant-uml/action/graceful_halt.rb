@@ -19,7 +19,7 @@ module VagrantPlugins
         #   the machine was properly shut down.
         # @param [Symbol] source_state The source state ID that the machine
         #   must be in to be shut down.
-        def initialize(app, env, target_state, source_state=nil)
+        def initialize(app, _env, target_state, source_state=nil)
           @app          = app
           @logger       = Log4r::Logger.new('vagrant::uml::action::graceful_halt')
           @source_state = source_state

@@ -5,7 +5,7 @@ module VagrantPlugins
       class HandleBoxMetadata
         SUPPORTED_VERSIONS = ['0.0.1', '0.0.2']
 
-        def initialize(app, env)
+        def initialize(app, _env)
           @app    = app
           @logger = Log4r::Logger.new('vagrant::uml::action::handle_box_metadata')
         end

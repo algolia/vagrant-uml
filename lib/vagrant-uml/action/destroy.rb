@@ -2,7 +2,7 @@ module VagrantPlugins
   module UML
     module Action
       class Destroy
-        def initialize(app, env)
+        def initialize(app, _env)
           @app = app
         end
 
