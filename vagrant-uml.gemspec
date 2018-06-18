@@ -1,5 +1,5 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'vagrant-uml/version'
 
@@ -9,11 +9,11 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Jeremy Jacque']
   spec.email         = ['jeremy.jacque@algolia.com']
   spec.description   = 'Usermode Linux provider for Vagrant'
-  spec.summary       = 'UML for Vagrant'
-  spec.homepage      = ''
+  spec.summary       = 'UML provider for Vagrant'
+  spec.homepage      = 'https://www.algolia.com'
   spec.license       = 'MIT'
 
-  spec.files         = `git ls-files`.split($/)
+  spec.files         = `git ls-files`.split($RS)
   spec.files.reject! { |file| ['example_box', 'debian6-uml.box'].include?(File.basename(file)) }
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(spec|spec|features)/})
@@ -21,4 +21,5 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler', '~> 1.3'
   spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rspec'
 end
