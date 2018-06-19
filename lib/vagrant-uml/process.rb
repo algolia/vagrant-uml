@@ -37,7 +37,7 @@ module VagrantPlugins
       #
       # @return [TrueClass] FalseClass] true if process was running and stopped
       def stop
-        if @process && @process.alive?
+        if @process&.alive?
           @process.stop
           true
         else
@@ -64,15 +64,12 @@ module VagrantPlugins
           # If the command was a failure, then raise an exception that is
           # nicely handled by Vagrant.
           if r.exit_code != 0 && r.exited? && !@options[:detach]
-            if @interrupted
-              raise UML::Errors::SubprocessInterruptError, command.inspect
-            else
-              raise UML::Errors::ExecuteError,
-                command: command.inspect,
-                stderr: r.io.stderr,
-                stdout: r.io.stdout,
-                exitcode: r.exit_code
-            end
+            raise UML::Errors::SubprocessInterruptError, command.inspect if @interrupted
+            raise UML::Errors::ExecuteError,
+              command: command.inspect,
+              stderr: r.io.stderr,
+              stdout: r.io.stdout,
+              exitcode: r.exit_code
           end
         end
         return r
@@ -84,7 +81,7 @@ module VagrantPlugins
           @logger.info('Interrupted.')
         end
 
-###### From vagrant Subprocess  #################
+        ###### From vagrant Subprocess  #################
         # Get the working directory
         workdir = @options[:workdir] || Dir.pwd
         @process = process = ChildProcess.build(*@command)
@@ -93,9 +90,7 @@ module VagrantPlugins
         process.duplex = true
         process.detach ||= @options[:detach]
         process.cwd = workdir
-        #process.io.stdout ||= @options[:stdout]
         process.io.stdout ||= File.new('out.txt', File::CREAT | File::TRUNC | File::RDWR, 0640)
-        #process.io.stderr ||= @options[:stderr]
         process.io.stderr ||= File.new('err.txt', File::CREAT | File::TRUNC | File::RDWR, 0640)
 
         Vagrant::Util::Busy.busy(int_callback) do
