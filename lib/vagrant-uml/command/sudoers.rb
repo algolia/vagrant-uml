@@ -10,7 +10,7 @@ module VagrantPlugins
 
         def initialize(argv, env)
           super
-          @argv
+          @argv = argv
           @env = env
           I18n.load_path << File.expand_path('locales/en.yml', VagrantPlugins::UML.source_root)
           I18n.reload!
@@ -22,10 +22,15 @@ module VagrantPlugins
           opts = OptionParser.new do |opts|
             opts.banner = 'Usage: vagrant uml sudoers'
             opts.separator ''
-            opts.on('-u user', '--user user', String, "The user for which to create the policy (defaults to '#{options[:user]}')") do |u|
+            opts.on('-u user',
+              '--user user',
+              String,
+              "The user for which to create the policy (defaults to '#{options[:user]}')") do |u|
               options[:user] = u
             end
-            opts.on('-c', '--stdout', 'create an output suitable to pipe to bash or sudo bash') do |c|
+            opts.on('-c',
+              '--stdout',
+              'create an output suitable to pipe to bash or sudo bash') do |c|
               options[:stdout] = c
             end
           end
@@ -33,19 +38,19 @@ module VagrantPlugins
           argv = parse_options(opts)
           return unless argv
 
-          sudoers_path = "/etc/sudoers.d/vagrant-uml-#{options[:user]}"
           create_sudoers!(options[:user], options[:stdout])
-          unless options[:stdout]
-            @env.ui.success(I18n.t('vagrant_uml.sudoer_file_created'))
-            @env.ui.detail(I18n.t('vagrant_uml.sudoer_advise',
-              user: options[:user],
-              sudoer_file: File.expand_path("./vagrant-uml-#{options[:user]}")))
-          end
+
+          return if options[:stdout]
+
+          @env.ui.success(I18n.t('vagrant_uml.sudoer_file_created'))
+          @env.ui.detail(I18n.t('vagrant_uml.sudoer_advise',
+            user: options[:user],
+            sudoer_file: File.expand_path("./vagrant-uml-#{options[:user]}")))
         end
 
         private
 
-        def create_sudoers!(user, to_stdout=false)
+        def create_sudoers!(user, to_stdout = false)
           tunctl_path = Vagrant::Util::Which.which('tunctl')
           sysctl_path = Vagrant::Util::Which.which('sysctl')
           ifconfig_path = Vagrant::Util::Which.which('ifconfig')
@@ -62,8 +67,7 @@ module VagrantPlugins
             "#{ip_path} link delete uml-[a-zA-Z0-9]+"
           ]
 
-          template = Vagrant::Util::TemplateRenderer.new(
-            'sudoers',
+          template = Vagrant::Util::TemplateRenderer.new('sudoers',
             template_root: VagrantPlugins::UML.source_root.join('templates').to_s,
             user: user,
             commands: commands)
