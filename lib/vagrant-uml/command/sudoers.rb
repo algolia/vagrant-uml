@@ -58,13 +58,16 @@ module VagrantPlugins
           ip_path = Vagrant::Util::Which.which('ip')
 
           commands = [
-            "#{tunctl_path} -u #{user} -t uml-[a-zA-Z0-9]+",
+            "#{tunctl_path} -u #{user} -t uml-[a-zA-Z0-9]*",
             "#{sysctl_path} -w net.ipv4.ip_forward=1",
-            "#{ifconfig_path} uml-[a-zA-Z0-9]+ [0-9\.]+/30 up",
-            "#{iptables_path} -t nat -A POSTROUTING -s [0-9\.]+ -o [a-zA-Z0-9\-\.]+ -m comment --comment uml-[a-zA-Z0-9]+ -j MASQUERADE",
+            "#{ifconfig_path} uml-[a-zA-Z0-9]* [0-9\.]*/30 up",
+            "#{iptables_path} -t nat -A POSTROUTING -s [0-9\.]* -o [a-zA-Z0-9\-\.]* -m comment --comment uml-[a-zA-Z0-9]* -j MASQUERADE",
+            "#{iptables_path} -I FORWARD -i [a-zA-Z0-9\-\.]* -o [a-zA-Z0-9\-\.]* -m comment --comment (to|from)-[a-zA-Z0-9]* -j ACCEPT",
             "#{iptables_path} -t nat -L POSTROUTING --line-numbers -n",
-            "#{iptables_path} -t nat -D POSTROUTING [0-9]+",
-            "#{ip_path} link delete uml-[a-zA-Z0-9]+"
+            "#{iptables_path} -L FORWARD --line-numbers -n",
+            "#{iptables_path} -t nat -D POSTROUTING [0-9]*",
+            "#{iptables_path} -D FORWARD [0-9]*",
+            "#{ip_path} link delete uml-[a-zA-Z0-9]*"
           ]
 
           template = Vagrant::Util::TemplateRenderer.new('sudoers',

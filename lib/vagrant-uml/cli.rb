@@ -29,13 +29,16 @@ module VagrantPlugins
       def sudo_allowed?
         # Lets figure out if the user already added the sudo rules generated from `vagrant uml-sudoer`
         regex = <<~REGEX
-          \s+\\\(root\\\) NOPASSWD: \/usr\/sbin\/tunctl -u #{ENV['USER']} -t uml-\\\[a-zA-Z0-9\\\]\\\+
+          \s+\\\(root\\\) NOPASSWD: \/usr\/sbin\/tunctl -u #{ENV['USER']} -t uml-\\\[a-zA-Z0-9\\\]\\\*
           \s+\\\(root\\\) NOPASSWD: \/sbin\/sysctl -w net\.ipv4.ip_forward\\\\=1
-          \s+\\\(root\\\) NOPASSWD: \/sbin\/ifconfig uml-\\\[a-zA-Z0-9\\\]\\\+ \\\[0-9.\\\]\\\+\/30 up
-          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -t nat -A POSTROUTING -s \\\[0-9\\\.\\\]\\\+ -o \\\[a-zA-Z0-9\\\-\\\.\\\]\\\+ -m comment --comment uml-\\\[a-zA-Z0-9\\\]\\\+ -j MASQUERADE
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/ifconfig uml-\\\[a-zA-Z0-9\\\]\\\* \\\[0-9.\\\]\\\*\/30 up
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -t nat -A POSTROUTING -s \\\[0-9\\\.\\\]\\\* -o \\\[a-zA-Z0-9\\\-\\\.\\\]\\\* -m comment --comment uml-\\\[a-zA-Z0-9\\\]\\\* -j MASQUERADE
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -I FORWARD -i \\\[a-zA-Z0-9\\\-\\\.\\\]\\\*  -o \\\[a-zA-Z0-9\\\-\\\.\\\]\\\* -m comment --comment \\\[-a-zA-Z0-9\\\]\\\* -j ACCEPT
           \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -t nat -L POSTROUTING --line-numbers -n
-          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -t nat -D POSTROUTING \\\[0-9\\\]\\\+
-          \s+\\\(root\\\) NOPASSWD: \/sbin\/ip link delete uml-\\\[a-zA-Z0-9\\\]\\\+
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -L FORWARD --line-numbers -n
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -t nat -D POSTROUTING \\\[0-9\\\]\\\*
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/iptables -D FORWARD \\\[0-9\\\]\\\*
+          \s+\\\(root\\\) NOPASSWD: \/sbin\/ip link delete uml-\\\[a-zA-Z0-9\\\]\\\*
         REGEX
         res = Vagrant::Util::Subprocess.execute('sudo', '-l')
         return true if res.stdout =~ /#{regex}/
@@ -266,7 +269,38 @@ EOS
           '-j',
           'MASQUERADE',
           retryable: true)
+
+        # Allow forwarding to/from the UML instance
+        Vagrant::Util::Subprocess.execute('sudo',
+          'iptables',
+          '-I',
+          'FORWARD',
+          '-i',
+          "uml-#{options[:name]}",
+          '-o',
+          default_interface,
+          '-m',
+          'comment',
+          '--comment',
+          "from-#{options[:name]}",
+          '-j',
+          'ACCEPT')
+        Vagrant::Util::Subprocess.execute('sudo',
+          'iptables',
+          '-I',
+          'FORWARD',
+          '-i',
+          default_interface,
+          '-o',
+          "uml-#{options[:name]}",
+          '-m',
+          'comment',
+          '--comment',
+          "to-#{options[:name]}",
+          '-j',
+          'ACCEPT')
       end
+
 
       def destroy_standalone_net(id)
         # Clean the MASQUERADE rule created for this instance id, it has tagged in its comment
@@ -294,6 +328,29 @@ EOS
             rule_number,
             retryable: true)
         end
+
+        # Clean the forwarding rules
+        ['to','from'].each do |direction|
+          res = Vagrant::Util::Subprocess.execute('sudo',
+            'iptables',
+            '-L',
+            'FORWARD',
+            '--line-numbers',
+            '-n',
+            retryable: true)
+          res.stdout =~ /([0-9]+)\s+ACCEPT\s+all\s+--\s+0\.0\.0\.0\/0\s+0\.0\.0\.0\/0\s+\/\*\s+#{direction}-#{id}\s+\*\//
+          rule_number = $1.to_s
+          if rule_number && !rule_number.empty?
+            # Clean it based on its rule number (if it exists)
+            Vagrant::Util::Subprocess.execute('sudo',
+              'iptables',
+              '-D',
+              'FORWARD',
+              rule_number,
+              retryable: true)
+          end
+        end
+
         # Now deletes the tuntap device
         Vagrant::Util::Subprocess.execute('sudo',
           'ip',
