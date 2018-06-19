@@ -1,7 +1,6 @@
-
 module VagrantPlugins
   module UML
-    class Config < Vagrant.plugin("2", :config)
+    class Config < Vagrant.plugin('2', :config)
       # Additional arguments to pass to the UML kernel when creating
       # the instance for the first time. This is an array of args.
       #
@@ -36,7 +35,6 @@ module VagrantPlugins
         @cpus            = UNSET_VALUE
       end
 
-
       # Finalize configurtion parameters
       # I choose 512m of RAM and 1 cpu as default
       def finalize!
@@ -48,14 +46,13 @@ module VagrantPlugins
       end
 
       # Basic config parameters validation
-      def validate(machine)
+      def validate(_machine)
         errors = _detected_errors
-        if !@create_args.is_a?(Array)
-          errors << I18n.t("vagrant_uml.errors.config.create_args_array")
+        unless @create_args.is_a?(Array)
+          errors << I18n.t('vagrant_uml.errors.config.create_args_array')
         end
-        { "uml provider" => errors }
+        { 'uml provider' => errors }
       end
-
     end
   end
 end

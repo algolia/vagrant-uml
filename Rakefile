@@ -1,5 +1,5 @@
 require 'rubygems'
 require 'bundler/setup'
-require "bundler/gem_tasks"
+require 'bundler/gem_tasks'
 
-task :default => :build
+task default: :build

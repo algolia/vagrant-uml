@@ -1,16 +1,16 @@
-require "log4r"
-require "vagrant-uml/cli"
+require 'log4r'
+require 'vagrant-uml/cli'
 
 module VagrantPlugins
-  module UML 
+  module UML
     module Action
       # This action reads the state of the machine and puts it in the
       # `:machine_state_id` key in the environment.
       class ReadState
         def initialize(app, env)
-          @app    = app 
+          @app    = app
           @cli    = CLI.new(env[:machine].name)
-          @logger = Log4r::Logger.new("vagrant::uml::action::read_state")
+          @logger = Log4r::Logger.new('vagrant::uml::action::read_state')
         end
 
         def call(env)
@@ -23,7 +23,7 @@ module VagrantPlugins
           # Return the state
           @cli.state(machine.id)
         end
-      end 
-    end 
-  end 
+      end
+    end
+  end
 end

@@ -8,11 +8,10 @@ module VagrantPlugins
         attr_reader :stderr, :stdout, :exitcode
         def initialize(message, *args)
           super
-          if message.is_a?(Hash)
-            @stderr = message[:stderr]
-            @stdout = message[:stdout]
-            @exitcode = message[:exitcode]
-          end
+          return unless message.is_a?(Hash)
+          @stderr = message[:stderr]
+          @stdout = message[:stdout]
+          @exitcode = message[:exitcode]
         end
       end
 
@@ -23,7 +22,6 @@ module VagrantPlugins
           super
         end
       end
-
 
       class LinuxRequired < Vagrant::Errors::VagrantError
         error_key(:uml_linux_required)
